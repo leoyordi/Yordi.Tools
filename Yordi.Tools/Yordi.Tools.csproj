@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<Title>Ferramentas para sistemas em geral</Title>
+	<Authors>leoyordi;</Authors>
+	<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	<Description>
+		Ferramentas diversas para uso comum em diversas outras bibliotecas para gerenciar sistemas.
+		Exemplos: bases para classes POCO; base para eventos; tratamentos dea arquivos; criptografia, atributos, conversores, logger, rede, validação de objetos e posicionamento de objetos (XYHL).
+	</Description>
+	<PackageTags>Yordi;Tools;Ferramentas</PackageTags>
+	<PackageId>Yordi.Tools</PackageId>
+	<Version>1.0.0</Version>
+	<Company>Yordi Sistemas Inteligentes</Company>
+	<RepositoryUrl>https://github.com/leoyordi/Yordi.Tools</RepositoryUrl>
+  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+		<PackageReference Include="System.Management" Version="8.0.0" />
+	</ItemGroup>
+</Project>

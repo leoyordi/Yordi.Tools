@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35707.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yordi.Tools", "Yordi.Tools\Yordi.Tools.csproj", "{0FE6DA89-1BCF-468A-B4A0-6B14807C05EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0FE6DA89-1BCF-468A-B4A0-6B14807C05EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FE6DA89-1BCF-468A-B4A0-6B14807C05EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FE6DA89-1BCF-468A-B4A0-6B14807C05EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FE6DA89-1BCF-468A-B4A0-6B14807C05EC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8FC59C04-E6D3-4AD1-99B0-1881CA24CFAA}
+	EndGlobalSection
+EndGlobal
