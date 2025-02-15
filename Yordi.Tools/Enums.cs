@@ -25,6 +25,10 @@ namespace Yordi.Tools
         string ValueMember { get; }
     }
 
+    /// <summary>
+    /// Operadores de comparação usados para montar instruções SQL, especialmente as relacionadas à clausula WHERE.<br/>
+    /// Por exemplo: CONTÉM, COMECAcom e TERMINAcom são usados para montar instruções SQL do tipo LIKE e acrescenta o coringa % onde cabe.
+    /// </summary>
     public enum Operador
     {
         IGUAL,
@@ -45,12 +49,18 @@ namespace Yordi.Tools
     {
         [Description("Nenhum")]
         NONE = 0,
+        [Description("SQL Server")]
+        SQLServer = 1,
         [Description("MySQL")]
         MySQL = 4,
         [Description("SQLite")]
         SQLite = 5
     }
 
+    /// <summary>
+    /// Tipos de dados suportados, usados para criar as instruções SQL num formato respeitado por cada tipo de banco de dados.<br/>
+    /// Por exemplo: BOOL será convertido em tinyint(1) no MySQL e bit no SQL Server.
+    /// </summary>
     public enum Tipo
     {
         STRING,
