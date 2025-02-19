@@ -315,6 +315,39 @@ namespace Yordi.Tools
             if (b1.Length != b2.Length) return false;
             return b1.SequenceEqual(b2);
         }
+
+        public static bool AreEqual(Type type1, Type type2)
+        {
+            if (type1.IsGenericType && type2.IsGenericType)
+            {
+                Type genericType1 = type1.GetGenericTypeDefinition();
+                Type genericType2 = type2.GetGenericTypeDefinition();
+
+                if (IsListType(genericType1))
+                {
+                    genericType1 = typeof(IEnumerable<>);
+                }
+
+                if (IsListType(genericType2))
+                {
+                    genericType2 = typeof(IEnumerable<>);
+                }
+
+                return genericType1 == genericType2;
+            }
+
+            return false;
+        }
+
+        private static bool IsListType(Type type)
+        {
+            return type == typeof(IEnumerable<>) ||
+                   type == typeof(ICollection<>) ||
+                   type == typeof(IList<>) ||
+                   type == typeof(IReadOnlyList<>) ||
+                   type == typeof(IReadOnlyCollection<>) ||
+                   type == typeof(List<>);
+        }
     }
 
 }
