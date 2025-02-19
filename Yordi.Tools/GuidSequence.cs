@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
+﻿using System.Security.Cryptography;
 
 namespace Yordi.Tools
 {
@@ -21,7 +18,7 @@ namespace Yordi.Tools
         MSSQL
     }
     /// <summary>
-    /// Cria um novo GUID sequencial baseado no timestamp e tipo deeeeee banco de dados.
+    /// Cria um novo GUID sequencial baseado no timestamp e tipo de banco de dados.
     /// Cada banco de dados tem uma forma diferente de ordenar GUIDs sequenciais.
     /// Esse método otimiza a ordenação dentro do banco de dados.
     /// </summary>
