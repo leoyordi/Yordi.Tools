@@ -125,6 +125,68 @@ Uma classe para conversão de tipos de dados.
 - `FromJson(byte[] obj, Type type)`: Converte bytes JSON para um objeto de um tipo específico.
 - `FromJson(byte[] obj, string assemblyQualifiedName)`: Converte bytes JSON para um objeto de um tipo específico.
 
+
+## RepositórioFile
+
+A classe `RepositorioFile<T>` é um repositório em arquivo no formato JSON. Ela oferece métodos para salvar e ler objetos do tipo `T` em arquivos JSON, além de métodos para ler e escrever texto diretamente em arquivos.
+
+### Funcionalidades
+
+- **Salvar(T objeto)**: Salva o objeto informado no arquivo especificado.
+- **Ler()**: Lê o arquivo, converte-o no tipo informado e devolve o objeto.
+- **LerAsync()**: Modo assíncrono para ler o arquivo e converter no tipo informado.
+- **LerComoTexto()**: Lê o arquivo base e devolve-o em formato texto, sem conversão.
+- **LerComoTexto(string arquivo)**: Lê o arquivo informado e devolve-o em formato texto, sem conversão.
+- **LerLinhas(string arquivo)**: Devolve o conteúdo do arquivo em linhas, dentro de uma array de string.
+- **Escrever(string texto)**: Escreve um texto no arquivo base.
+- **Escrever(string texto, string arquivo)**: Escreve o texto no arquivo informado de forma assíncrona.
+
+### Exemplo de Uso
+1. Exemplo para salvar configurações em um arquivo JSON:
+```csharp
+using System.Text; 
+using Yordi.Tools;
+public class Program 
+{ 
+    public static void Main() 
+    { 
+        var repo = new RepositorioFile<MyClass>("caminho/para/arquivo.json", Encoding.UTF8);
+        // Salvar um objeto
+        var myObject = new MyClass { Property1 = "Valor1", Property2 = "Valor2" };
+        repo.Salvar(myObject);
+        // Ler um objeto
+        var loadedObject = repo.Ler();
+        // Ler um arquivo como texto
+        var texto = repo.LerComoTexto();
+    }
+}
+public class MyClass 
+{ 
+    public string Property1 { get; set; } 
+    public string Property2 { get; set; } 
+}
+```
+
+2. Exemplo para salvar uma lista de objetos em um arquivo JSON:
+
+```csharp
+using System.Text;
+using Yordi.Tools;
+public class MyRepo : RepositorioFile<IEnumerable<MyClass>>
+{
+    private static MyRepo _instance;
+    private MyRepo(string path) : base(path, Encoding.UTF8)  { }
+    public static MyRepo Instance => _instance ??=_new MyRepo("caminho/para/arquivo.json");
+
+    public override bool Salvar(MyClass objeto)
+    {
+        var list = Ler().ToList();
+        list.Add(objeto);
+        return base.Salvar(list);
+    }    
+}
+```
+
 ## Instalação
 
 Para instalar o pacote, use o seguinte comando:
