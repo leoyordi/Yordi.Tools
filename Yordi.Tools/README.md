@@ -176,9 +176,9 @@ public class MyRepo : RepositorioFile<IEnumerable<MyClass>>
 {
     private static MyRepo _instance;
     private MyRepo(string path) : base(path, Encoding.UTF8)  { }
-    public static MyRepo Instance => _instance ??=_new MyRepo("caminho/para/arquivo.json");
+    public static MyRepo Instance => _instance ??= _new MyRepo("caminho/para/arquivo.json");
 
-    public override bool Salvar(MyClass objeto)
+    public bool Salvar(MyClass objeto)
     {
         var list = Ler().ToList();
         list.Add(objeto);
