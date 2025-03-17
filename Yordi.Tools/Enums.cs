@@ -10,6 +10,10 @@ namespace Yordi.Tools
     public interface IObjectStringIndexer { object? this[string propertyName] { get; set; } }
     public interface IObservacao { string Observacao { get; set; } }
     public interface IToString { string ToString(); }
+    public interface IPropertyType
+    {
+        Type? GetPropertyType(string propertyName);
+    }
 
     public interface ICommonColumns
     {

@@ -26,8 +26,13 @@ namespace Yordi.Tools
     }
 
 
-    public class Basico : CommonColumns, IAuto, IDescricao, IObjectStringIndexer//, IDisplayValueMember
+    public class Basico : CommonColumns, IAuto, IDescricao, IObjectStringIndexer, IPropertyType
     {
+        private readonly Type myType;
+        public Basico()
+        {
+            myType = GetType();
+        }
         [AutoIncrement]
         public virtual int Auto { get; set; }
         public virtual string? Descricao { get; set; }
@@ -45,7 +50,6 @@ namespace Yordi.Tools
                 // probably faster without reflection:
                 // like:  return Properties.Settings.Default.PropertyValues[propertyName] 
                 // instead of the following
-                Type myType = this.GetType();
                 PropertyInfo? myPropInfo = myType.GetProperty(propertyName);
                 if (myPropInfo == null)
                     return null;
@@ -53,7 +57,6 @@ namespace Yordi.Tools
             }
             set
             {
-                Type myType = GetType();
                 PropertyInfo? myPropInfo = myType.GetProperty(propertyName);
                 if (myPropInfo == null)
                     return;
@@ -61,6 +64,13 @@ namespace Yordi.Tools
                 object? safeValue = value == null ? null : Convert.ChangeType(value, t);
                 myPropInfo.SetValue(this, safeValue, null);
             }
+        }
+        public virtual Type? GetPropertyType(string propertyName)
+        {
+            PropertyInfo? myPropInfo = myType.GetProperty(propertyName);
+            if (myPropInfo == null)
+                return null;
+            return myPropInfo.PropertyType;
         }
 
         public override string ToString()
