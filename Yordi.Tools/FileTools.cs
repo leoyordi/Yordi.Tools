@@ -532,6 +532,15 @@ namespace Yordi.Tools
             }
             catch { return null; }
         }
+        public static DateTime? DataAtualizacao(string arq)
+        {
+            try
+            {
+                var file = new FileInfo(arq);
+                return file.LastWriteTime;
+            }
+            catch { return null; }
+        }
 
         #endregion
     }
