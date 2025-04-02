@@ -91,7 +91,7 @@ namespace Yordi.Tools
                 else
                     s.Append("port=3306;");
                 if (!string.IsNullOrEmpty(User))
-                    s.Append($"uid={User}");
+                    s.Append($"uid={User};");
                 if (!string.IsNullOrEmpty(Password))
                     s.Append($"pwd={Password};");
 
