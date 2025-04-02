@@ -352,7 +352,18 @@ namespace Yordi.Tools
             return encoding ?? defaultEncoding ?? Encoding.ASCII;
         }
 
-
+        public static IDictionary<string, DateTime>? ArquivosPorData(string pasta, string extension, DateTime ultimoLidoUTC)
+        {
+            FileInfo[]? arquivos = ArquivosPorExtensao(pasta, extension);
+            if (arquivos == null || arquivos.Length == 0) return null;
+            IEnumerable<FileInfo> novos = arquivos.Where(m => m.LastWriteTimeUtc >= ultimoLidoUTC);
+            if (novos == null || !novos.Any()) return null;
+            IDictionary<string, DateTime> vs = new Dictionary<string, DateTime>();
+            var novosOrdenados = novos.OrderBy(m => m.LastWriteTime).ToList();
+            foreach (var item in novosOrdenados)
+                vs.Add(item.FullName, item.LastWriteTime);
+            return vs;
+        }
         #region Derivados
 
         /// <summary>Retorna o nome de arquivo e a extensão da cadeia de caracteres do caminho especificado.
@@ -457,7 +468,8 @@ namespace Yordi.Tools
             try
             {
                 DirectoryInfo diretorio = new DirectoryInfo(pasta);
-                return diretorio.GetFiles(extensao, SearchOption.AllDirectories);
+                var files = diretorio.GetFiles($"*.{extensao}", SearchOption.AllDirectories);
+                return files;
             }
             catch (Exception e)
             {
@@ -536,8 +548,9 @@ namespace Yordi.Tools
         {
             try
             {
-                var file = new FileInfo(arq);
-                return file.LastWriteTime;
+                return File.GetLastWriteTime(arq);  
+                //var file = new FileInfo(arq);
+                //return file.LastWriteTime;
             }
             catch { return null; }
         }
