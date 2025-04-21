@@ -135,7 +135,7 @@ namespace Yordi.Tools
             if (Logger.IsConsoleApplication)
                 while (exception != null)
                 {
-                    Console.WriteLine(exception);
+                    Console.Error.WriteLine(exception);
                     exception = exception.InnerException;
                 }
         }
