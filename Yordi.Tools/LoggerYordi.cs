@@ -41,7 +41,7 @@ namespace Yordi.Tools
                 message += formatter(state, exception);
             }
             string log = $"[{DateTime.Now}] [{logLevel}] {message}";
-            WriteLine(log);
+            WriteLine(log, logLevel >= LogLevel.Error);
             Logger.LogSync(log);
         }
         private class NoopDisposable : IDisposable
@@ -50,10 +50,13 @@ namespace Yordi.Tools
             {
             }
         }
-        private void WriteLine(string msg)
+        private void WriteLine(string msg, bool isError = false)
         {
 #if DEBUG
-            Console.WriteLine(msg);
+            if (!isError)
+                Console.WriteLine(msg);
+            else
+                Console.Error.WriteLine(msg);
 #endif
         }
     }
@@ -105,14 +108,14 @@ namespace Yordi.Tools
             [CallerLineNumber] int line = 0)
         {
             Logger.LogSync(message, origem, line);
-            WriteLine($"[{DataPadrao.Brasilia}] [ERR] [{origem}:{line}] {message}");
+            WriteLine($"[{DataPadrao.Brasilia}] [ERR] [{origem}:{line}] {message}", true);
         }
         public static void LogError(this ILogger logger, Exception e, 
             [CallerMemberName] string origem = "", 
             [CallerLineNumber] int line = 0)
         {
             Logger.LogSync(e, origem, line);
-            WriteLine($"[{DataPadrao.Brasilia}] [ERR] [{origem}:{line}] {e.Message}");
+            WriteLine($"[{DataPadrao.Brasilia}] [ERR] [{origem}:{line}] {e.Message}", true);
             if (e.Data.Count > 0)
             {
                 StringBuilder sb = new StringBuilder();
@@ -120,15 +123,23 @@ namespace Yordi.Tools
                 {
                     sb.AppendLine($"{i.Key}: {i.Value}");
                 }
-                WriteLine(sb.ToString());
+                WriteLine(sb.ToString(), true);
             }
             WriteLine(e);
         }
         private static void WriteLine(string msg, bool error = false)
         {
             if (Logger.IsConsoleApplication)
-                Console.WriteLine(msg);
-            Debug.WriteLine(msg);
+            {
+                if (error)
+                    Console.Error.WriteLine(msg);
+                else
+                    Console.WriteLine(msg);
+            }
+            if (error)
+                Debug.Fail(msg + Environment.NewLine);
+            else
+                Debug.WriteLine(msg);
         }
         private static void WriteLine(Exception? exception)
         {
