@@ -40,27 +40,33 @@ Uma classe para gerar GUIDs sequenciais.
 Uma classe para operações comuns com arquivos.
 
 #### Métodos
-- `ReadAllTextAsync(string filePath, Encoding? encoding = null)`: Lê todo o conteúdo de um arquivo de forma assíncrona.
-- `ReadAllText(string filePath)`: Lê todo o conteúdo de um arquivo.
+- `ReadAllTextAsync(string? filePath, Encoding? encoding = null)`: Lê todo o conteúdo de um arquivo de forma assíncrona.
+- `ReadAllText(string? filePath)`: Lê todo o conteúdo de um arquivo.
+- `ReadAllLines(string? filePath, Encoding? encoding = null)`: Lê todas as linhas de um arquivo e retorna como um array de strings.
 - `WriteText(string? filePath, string text, Encoding? encoding = null, bool replace = false)`: Escreve texto em um arquivo.
-- `WriteAllBytes(string filePath, byte[] bytes, bool replace = false)`: Escreve bytes em um arquivo.
+- `WriteAllBytes(string? filePath, byte[] bytes, bool replace = false)`: Escreve bytes em um arquivo.
 - `WriteTextAsync(string? filePath, string text, Encoding? encoding = null)`: Escreve texto em um arquivo de forma assíncrona.
-- `DetectFileEncoding(string filename, Encoding? defaultEncoding = null)`: Detecta a codificação de um arquivo.
+- `DetectFileEncoding(string? filename, Encoding? defaultEncoding = null)`: Detecta a codificação de um arquivo.
 - `NomeArquivo(string? filePath)`: Retorna o nome do arquivo de um caminho especificado.
 - `PastaSomente(string? nomeArquivoCompleto)`: Retorna o nome da pasta de um caminho especificado.
 - `PastaTemporaria()`: Retorna o caminho da pasta temporária.
 - `NomeArquivoSemExtensao(string? filePath)`: Retorna o nome do arquivo sem a extensão.
 - `Extensao(string? filePath)`: Retorna a extensão do arquivo.
 - `GetBuildDate()`: Retorna a data de compilação do assembly.
-- `ArquivoExiste(string arquivo)`: Verifica se um arquivo existe.
-- `PastaExiste(string pasta)`: Verifica se uma pasta existe.
-- `CriaDiretorio(string path)`: Cria um diretório.
-- `Combina(string pasta, string arquivo)`: Combina uma pasta e um arquivo em um caminho.
-- `UltimoLog(string pasta)`: Retorna o último arquivo de log na pasta especificada.
-- `LogDiaAnterior(string pasta)`: Retorna o arquivo de log do dia anterior na pasta especificada.
-- `Excluir(string arquivo)`: Exclui um arquivo.
-- `Mover(string arquivoOrigem, string arquivoDestino)`: Move um arquivo de origem para um arquivo de destino.
-- `DataCriacao(string arq)`: Retorna a data de criação de um arquivo.
+- `ArquivoExiste(string? arquivo)`: Verifica se um arquivo existe.
+- `PastaExiste(string? pasta)`: Verifica se uma pasta existe.
+- `CriaDiretorio(string? path)`: Cria um diretório.
+- `Combina(string? pasta, string? arquivo)`: Combina uma pasta e um arquivo em um caminho.
+- `UltimoLog(string? pasta)`: Retorna o último arquivo de log na pasta especificada.
+- `LogDiaAnterior(string? pasta)`: Retorna o arquivo de log do dia anterior na pasta especificada.
+- `Excluir(string? arquivo)`: Exclui um arquivo.
+- `Mover(string? arquivoOrigem, string? arquivoDestino)`: Move um arquivo de origem para um arquivo de destino.
+- `DataCriacao(string? arq)`: Retorna a data de criação de um arquivo.
+- `DataAtualizacao(string? arq)`: Retorna a data de atualização de um arquivo.
+- `ArquivosPorData(string? folder, string? criteria, DateTime ultimoLidoUTC)`: Retorna um dicionário de arquivos modificados após uma data específica.
+- `Arquivos(string? pasta, string? criterio = "*.log", bool? topDirectoryOnly = true)`: Retorna os arquivos de uma pasta com base em um critério.
+- `ListarArquivos(string? pasta, string? criterio, bool? topDirectoryOnly = true)`: Retorna uma lista preguiçosa de arquivos em um diretório com base em critérios.
+- `Excluir(string pasta, string extensao, DateTime olderThan)`: Exclui arquivos mais antigos que uma data específica.
 
 ### EventBaseClass
 Uma classe base para eventos.
@@ -197,7 +203,7 @@ Para instalar o pacote, use o seguinte comando:
 ## Uso
 
 Aqui estão alguns exemplos de como usar as ferramentas:
-<pre>
+```csharp
 using Yordi.Tools;
 // Exemplo de uso do ValidaObjetos bool isEmail = ValidaObjetos.IsEmail("example@example.com"); bool isCPF = ValidaObjetos.IsCPF("123.456.789-09");
 // Exemplo de uso do LoggerYordi var logger = LoggerYordi.LoggerInstance(); logger.Log(LogLevel.Information, new EventId(), "Mensagem de log", null, (state, exception) => state.ToString());
@@ -207,7 +213,7 @@ using Yordi.Tools;
 // Exemplo de uso do DataPadrao DateTime brasiliaTime = DataPadrao.Brasilia;
 // Exemplo de uso do Cripto var cripto = new Cripto("chave"); string encrypted = cripto.Encrypt("texto"); string? decrypted = cripto.Decrypt(encrypted);
 // Exemplo de uso do Conversores int intValue = Conversores.ToInt("123"); bool boolValue = Conversores.ToBool("true");
-</pre>
+```
 
 
 ## Contribuição
