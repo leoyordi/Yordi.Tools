@@ -11,7 +11,7 @@ namespace Yordi.Tools
         private static string? _msg;
         public static string? Mensagem { get { return _msg; } }
 
-        public static string ConfigFolder 
+        public static string ConfigFolder
         {
             get
             {
@@ -22,7 +22,7 @@ namespace Yordi.Tools
                 else
                     return _configFolder;
             }
-            set => _configFolder = value; 
+            set => _configFolder = value;
         }
 
         private static string _configFolder = ".\\Configs";
@@ -79,8 +79,9 @@ namespace Yordi.Tools
 
 
 
-        public static async Task<string> ReadAllTextAsync(string filePath, Encoding? encoding = null)
+        public static async Task<string?> ReadAllTextAsync(string? filePath, Encoding? encoding = null)
         {
+            if (!ArquivoExiste(filePath)) return null;
             _msg = String.Empty;
             var stringBuilder = new StringBuilder();
             if (encoding == null)
@@ -102,8 +103,9 @@ namespace Yordi.Tools
         private const int DelayOnRetry = 1000;
 
 
-        public static string? ReadAllText(string filePath)
+        public static string? ReadAllText(string? filePath)
         {
+            if (!ArquivoExiste(filePath)) return null;
             FileInfo fileInfo = new FileInfo(filePath);
             Rows(fileInfo.Length);
             try
@@ -145,14 +147,14 @@ namespace Yordi.Tools
             GC.Collect();
             return null;
         }
-        
+
         /// <summary>
         /// Lê todo o arquivo e retorna o conteúdo como string.
         /// https://stackoverflow.com/questions/26741191/ioexception-the-process-cannot-access-the-file-file-path-because-it-is-being#answer-26741192
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        public static string ReadAllText(string filePath, Encoding? encoding = null)
+        public static string ReadAllText(string? filePath, Encoding? encoding = null)
         {
             _msg = String.Empty;
             string s = String.Empty;
@@ -196,7 +198,7 @@ namespace Yordi.Tools
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        public static string[]? ReadAllLines(string filePath, Encoding? encoding = null)
+        public static string[]? ReadAllLines(string? filePath, Encoding? encoding = null)
         {
             _msg = string.Empty;
             string[]? lines = null;
@@ -249,12 +251,13 @@ namespace Yordi.Tools
                     WriteAllBytes(p, encodedText, replace);
                 }
                 catch { }
-                return false; 
+                return false;
             }
         }
 
-        public static bool WriteAllBytes(string filePath, byte[] bytes, bool replace = false)
+        public static bool WriteAllBytes(string? filePath, byte[] bytes, bool replace = false)
         {
+            if (string.IsNullOrEmpty(filePath)) return false;
             try
             {
                 FileMode mode = FileMode.Append;
@@ -324,8 +327,9 @@ namespace Yordi.Tools
         /// </summary>
         /// <param name="filename">The text file to analyze.</param>
         /// <returns>The detected encoding.</returns>
-        public static Encoding DetectFileEncoding(string filename, Encoding? defaultEncoding = null)
+        public static Encoding DetectFileEncoding(string? filename, Encoding? defaultEncoding = null)
         {
+            if (string.IsNullOrEmpty(filename)) return Encoding.ASCII;
             // Read the BOM
             var bom = new byte[4];
             Encoding? encoding = null;
@@ -352,9 +356,9 @@ namespace Yordi.Tools
             return encoding ?? defaultEncoding ?? Encoding.ASCII;
         }
 
-        public static IDictionary<string, DateTime>? ArquivosPorData(string pasta, string extension, DateTime ultimoLidoUTC)
+        public static IDictionary<string, DateTime>? ArquivosPorData(string? folder, string? criteria, DateTime ultimoLidoUTC)
         {
-            FileInfo[]? arquivos = ArquivosPorExtensao(pasta, extension);
+            FileInfo[]? arquivos = ArquivosPorData(folder, criteria);
             if (arquivos == null || arquivos.Length == 0) return null;
             IEnumerable<FileInfo> novos = arquivos.Where(m => m.LastWriteTimeUtc >= ultimoLidoUTC);
             if (novos == null || !novos.Any()) return null;
@@ -379,7 +383,7 @@ namespace Yordi.Tools
         /// path contém um ou mais caracteres inválidos definidos em System.IO.Path.GetInvalidPathChars.
         /// </exception>
         public static string? NomeArquivo(string? filePath) => Path.GetFileName(filePath);
-        public static string? PastaSomente(string? nomeArquivoCompleto) 
+        public static string? PastaSomente(string? nomeArquivoCompleto)
             => string.IsNullOrEmpty(nomeArquivoCompleto) ? null : new DirectoryInfo(nomeArquivoCompleto)?.Parent?.Name;
         public static string PastaTemporaria() => Path.GetTempPath();
 
@@ -391,7 +395,7 @@ namespace Yordi.Tools
 
         public static string? Extensao(string? filePath)
         {
-            if (string.IsNullOrEmpty (filePath)) return null;
+            if (string.IsNullOrEmpty(filePath)) return null;
             return Path.GetExtension(filePath);
         }
         public static DateTime? GetBuildDate()
@@ -405,10 +409,11 @@ namespace Yordi.Tools
                 return null;
             return File.GetLastWriteTime(path);
         }
-        public static bool ArquivoExiste(string arquivo) => File.Exists(arquivo);
-        public static bool PastaExiste(string pasta) => Directory.Exists(pasta);
-        public static bool CriaDiretorio(string path)
+        public static bool ArquivoExiste(string? arquivo) => File.Exists(arquivo);
+        public static bool PastaExiste(string? pasta) => Directory.Exists(pasta);
+        public static bool CriaDiretorio(string? path)
         {
+            if (string.IsNullOrEmpty(path)) return false;
             if (PastaExiste(path)) return true;
             try
             {
@@ -418,9 +423,17 @@ namespace Yordi.Tools
             catch { return false; }
         }
 
-        public static string Combina(string pasta, string arquivo) => Path.Combine(pasta, arquivo);
-        public static IEnumerable<string> Pastas(string path)
+        public static string? Combina(string? pasta, string? arquivo)
         {
+            if (string.IsNullOrEmpty(pasta) && string.IsNullOrEmpty(arquivo)) return null;
+            if (string.IsNullOrEmpty(pasta)) return arquivo;
+            if (string.IsNullOrEmpty(arquivo)) return pasta;
+            return Path.Combine(pasta, arquivo);
+        }
+        public static IEnumerable<string>? Pastas(string? path)
+        {
+            if (string.IsNullOrEmpty(path))
+                yield break;
             DirectoryInfo? directoryInfo = Directory.GetParent(path);
             while (directoryInfo != null)
             {
@@ -430,7 +443,7 @@ namespace Yordi.Tools
             }
         }
 
-        public static string? UltimoLog(string pasta)
+        public static string? UltimoLog(string? pasta)
         {
             var arquivos = ArquivosPorData(pasta);
             if (arquivos == null || arquivos.Length == 0) return null;
@@ -453,35 +466,44 @@ namespace Yordi.Tools
         /// </summary>
         /// <param name="pasta"></param>
         /// <returns></returns>
-        private static FileInfo[]? ArquivosPorData(string pasta)
+        public static FileInfo[]? Arquivos(string? pasta, string? criterio = "*.log", bool? topDirectoryOnly = true)
         {
+            if (string.IsNullOrEmpty(pasta)) return null;
             DirectoryInfo diretorio = new DirectoryInfo(pasta);
-            FileInfo[] arquivos = diretorio.GetFiles("*.log", SearchOption.TopDirectoryOnly);
+            if (string.IsNullOrEmpty(criterio))
+                criterio = "*.*";
+            SearchOption searchOption = true.Equals(topDirectoryOnly) ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories;
+            FileInfo[] arquivos = diretorio.GetFiles(criterio, searchOption);
+            if (arquivos == null || arquivos.Length == 0)
+                return null;
+            Array.Sort(arquivos, delegate (FileInfo a, FileInfo b) { return DateTime.Compare(b.LastWriteTime, a.LastWriteTime); });
+            return arquivos;
+        }
+        private static FileInfo[]? ArquivosPorData(string? pasta, string? extensao = "*.log", bool? topDirectoryOnly = true)
+        {
+            FileInfo[]? arquivos = Arquivos(pasta, extensao, topDirectoryOnly);
             if (arquivos == null || arquivos.Length == 0)
                 return null;
             Array.Sort(arquivos, delegate (FileInfo a, FileInfo b) { return DateTime.Compare(b.LastWriteTime, a.LastWriteTime); });
             return arquivos;
         }
 
-        private static FileInfo[]? ArquivosPorExtensao(string pasta, string extensao)
+        /// <summary>
+        /// Return a lazy list of files in the directory according search and directory child criteria.
+        /// </summary>
+        /// <param name="pasta">Directory start</param>
+        /// <param name="criterio">Criteria to search, like "*.log"</param>
+        /// <param name="topDirectoryOnly">true for only start directory, false or null for all directories</param>
+        /// <returns>If no error, Lazy IEnumerable<string> list of files. If any error, null</returns>
+        public static IEnumerable<string>? ListarArquivos(string? pasta, string? criterio, bool? topDirectoryOnly = true)
         {
+            if (string.IsNullOrEmpty(pasta)) return null;
             try
             {
-                DirectoryInfo diretorio = new DirectoryInfo(pasta);
-                var files = diretorio.GetFiles($"*.{extensao}", SearchOption.AllDirectories);
-                return files;
-            }
-            catch (Exception e)
-            {
-                Error(e);
-            }
-            return null;
-        }
-        public static IEnumerable<string>? ListarArquivos(string pasta, string criterio)
-        {
-            try
-            {
-                return Directory.EnumerateFiles(pasta, criterio, SearchOption.AllDirectories);
+                SearchOption searchOption = true.Equals(topDirectoryOnly) ? SearchOption.TopDirectoryOnly : SearchOption.AllDirectories;
+                if (string.IsNullOrEmpty(criterio))
+                    criterio = "*.*";
+                return Directory.EnumerateFiles(pasta, criterio, searchOption);
             }
             catch (Exception e)
             {
@@ -490,15 +512,17 @@ namespace Yordi.Tools
             return null;
         }
 
-        public static string? Excluir(string arquivo)
+        public static string? Excluir(string? arquivo)
         {
+            if (string.IsNullOrEmpty(arquivo)) return null;
+            if (!File.Exists(arquivo)) return null;
             try { File.Delete(arquivo); return null; }
             catch (Exception e) { return e.Message; }
         }
 
         public static int Excluir(string pasta, string extensao, DateTime olderThan)
         {
-            var files = ArquivosPorExtensao(pasta, extensao);
+            var files = Arquivos(pasta, extensao);
             if (files == null || files.Length == 0)
                 return 0;
             var filter = files.Where(m => m.CreationTime < olderThan);
@@ -523,8 +547,10 @@ namespace Yordi.Tools
         /// <param name="arquivoOrigem"></param>
         /// <param name="arquivoDestino"></param>
         /// <returns></returns>
-        public static bool Mover(string arquivoOrigem, string arquivoDestino)
+        public static bool Mover(string? arquivoOrigem, string arquivoDestino)
         {
+            if (string.IsNullOrEmpty(arquivoOrigem) || string.IsNullOrEmpty(arquivoDestino)) return false;
+            if (!File.Exists(arquivoOrigem)) return false;
             try
             {
                 if (File.Exists(arquivoDestino))
@@ -535,17 +561,20 @@ namespace Yordi.Tools
             catch (Exception e) { Error(e); return false; }
         }
 
-        public static DateTime? DataCriacao(string arq)
+        public static DateTime? DataCriacao(string? arq)
         {
+            if (string.IsNullOrEmpty(arq)) return null;
+            if (!File.Exists(arq)) return null;
             try
             {
-                var file = new FileInfo(arq);
-                return file.CreationTime;
+                return File.GetCreationTime(arq);
             }
             catch { return null; }
         }
-        public static DateTime? DataAtualizacao(string arq)
+        public static DateTime? DataAtualizacao(string? arq)
         {
+            if (string.IsNullOrEmpty(arq)) return null;
+            if (!File.Exists(arq)) return null;
             try
             {
                 return File.GetLastWriteTime(arq);  
