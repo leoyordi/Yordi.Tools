@@ -223,3 +223,9 @@ Se você quiser contribuir para o projeto, por favor, siga as diretrizes de cont
 ## Licença
 
 Este projeto está licenciado sob a licença MIT.
+
+## Changelog
+- **v1.0.10**: 
+  - Classe Cripto corrigida. A palavra-chave convertida poderia ter dois valores se a mesma instância fosse usada mais de uma vez.
+  - Acréscimo de um projeto do tipo console para testes. Não acompanha o pacote nugget. Versionamento seguirá com base na dll
+- **v1.0.9**: Adicionada a classe `RepositorioFile<T>` para facilitar o trabalho com arquivos JSON.

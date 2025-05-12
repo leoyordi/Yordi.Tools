@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yordi.Tools", "Yordi.Tools\Yordi.Tools.csproj", "{0FE6DA89-1BCF-468A-B4A0-6B14807C05EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yordi.Tools.ConsoleApp", "Yordi.Tools.ConsoleApp\Yordi.Tools.ConsoleApp.csproj", "{BE514679-7FBC-4D67-9629-8FD1A2EA837C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{0FE6DA89-1BCF-468A-B4A0-6B14807C05EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FE6DA89-1BCF-468A-B4A0-6B14807C05EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FE6DA89-1BCF-468A-B4A0-6B14807C05EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE514679-7FBC-4D67-9629-8FD1A2EA837C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE514679-7FBC-4D67-9629-8FD1A2EA837C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE514679-7FBC-4D67-9629-8FD1A2EA837C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE514679-7FBC-4D67-9629-8FD1A2EA837C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

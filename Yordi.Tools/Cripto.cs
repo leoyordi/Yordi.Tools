@@ -17,29 +17,8 @@ namespace Yordi.Tools
             _algorithm.IV = new byte[] { 0xf, 0x6f, 0x13, 0x2e, 0x35, 0xc2, 0xcd, 0xf9, 0x5, 0x46, 0x9c, 0xea, 0xa8, 0x4b, 0x73, 0xcc };
         }
 
-        #endregion
-        #region Properties
-        public string? Mensagem { get { return _msg; } }
-
-        #endregion
-        /// <summary>
-        /// Contrutor em que é setado um tipo de criptografia padrão (Rijndael).
-        /// </summary>
-        public Cripto(string key)
+        private void RedefineKey()
         {
-            _key = key;
-            _algorithm = Aes.Create();
-            _algorithm.Mode = CipherMode.CBC;
-        }
-        
-        #region Public methods
-        /// <summary>
-        /// Gera a chave de criptografia válida dentro do array.
-        /// </summary>
-        /// <returns>Chave com array de bytes.</returns>
-        public virtual byte[] GetKey()
-        {
-            string salt = string.Empty;
             // Ajusta o tamanho da chave se necessário e retorna uma chave válida
             if (_algorithm.LegalKeySizes.Length > 0)
             {
@@ -60,10 +39,36 @@ namespace Yordi.Tools
                     if (keySize < validSize)
                     {
                         // Preenche a chave com arterisco para corrigir o tamanho
-                        _key = _key.PadRight(validSize / 8, '*');
+                        var padding = validSize / 8;
+                        _key = _key.PadRight(padding, '*');
                     }
                 }
             }
+        }
+        #endregion
+        #region Properties
+        public string? Mensagem { get { return _msg; } }
+
+        #endregion
+        /// <summary>
+        /// Contrutor em que é setado um tipo de criptografia padrão (Rijndael).
+        /// </summary>
+        public Cripto(string key)
+        {
+            _key = key;
+            _algorithm = Aes.Create();
+            _algorithm.Mode = CipherMode.CBC;
+            RedefineKey();
+        }
+        
+        #region Public methods
+        /// <summary>
+        /// Gera a chave de criptografia válida dentro do array.
+        /// </summary>
+        /// <returns>Chave com array de bytes.</returns>
+        public virtual byte[] GetKey()
+        {
+            string salt = string.Empty;
             PasswordDeriveBytes key = new PasswordDeriveBytes(_key, ASCIIEncoding.ASCII.GetBytes(salt));
 
             return key.GetBytes(_key.Length);
