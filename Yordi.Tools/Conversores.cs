@@ -314,6 +314,8 @@ namespace Yordi.Tools
             {
                 var s = obj.Replace("\"Result\":", $"\"{typeof(T).Name}\":");
                 //var r = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(s);
+                if (typeof(T) == typeof(string))
+                    return obj as T;
                 var r = JsonSerializer.Deserialize<T>(s, jsonSerializeOptions);
                 return r;
             }
@@ -321,7 +323,10 @@ namespace Yordi.Tools
         }
         public static dynamic? FromJson(string? obj, Type type)
         {
-            if (string.IsNullOrEmpty(obj)) return null;
+            if (string.IsNullOrEmpty(obj))
+                return null;
+            else if (type == typeof(string))
+                return obj;
             try
             {
                 var r = JsonSerializer.Deserialize(obj, type, jsonSerializeOptions);
@@ -338,6 +343,8 @@ namespace Yordi.Tools
                 if (string.IsNullOrEmpty(obj) || string.IsNullOrEmpty(assemblyQualifiedName)) return null;
                 var type = Type.GetType(assemblyQualifiedName);
                 if (type == null) return null;
+                if (type == typeof(string))
+                    return obj;
                 var r = JsonSerializer.Deserialize(obj, type, jsonSerializeOptions);
                 var r2 = Convert.ChangeType(r, type);
                 return r2;
