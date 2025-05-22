@@ -225,6 +225,8 @@ Se você quiser contribuir para o projeto, por favor, siga as diretrizes de cont
 Este projeto está licenciado sob a licença MIT.
 
 ## Changelog
+- **v1.0.11**:
+  - Corrigido bug em Conversores.FromJson. Quando o AssemblyQualifiedName era string, o método não conseguia converter o JSON para o tipo correto.
 - **v1.0.10**: 
   - Classe Cripto corrigida. A palavra-chave convertida poderia ter dois valores se a mesma instância fosse usada mais de uma vez.
   - Acréscimo de um projeto do tipo console para testes. Não acompanha o pacote nugget. Versionamento seguirá com base na dll
