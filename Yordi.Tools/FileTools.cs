@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -409,8 +410,8 @@ namespace Yordi.Tools
                 return null;
             return File.GetLastWriteTime(path);
         }
-        public static bool ArquivoExiste(string? arquivo) => File.Exists(arquivo);
-        public static bool PastaExiste(string? pasta) => Directory.Exists(pasta);
+        public static bool ArquivoExiste([NotNullWhen(true)] string? arquivo) => File.Exists(arquivo);
+        public static bool PastaExiste([NotNullWhen(true)] string? pasta) => Directory.Exists(pasta);
         public static bool CriaDiretorio(string? path)
         {
             if (string.IsNullOrEmpty(path)) return false;
@@ -423,10 +424,10 @@ namespace Yordi.Tools
             catch { return false; }
         }
 
-        public static string? Combina(string? pasta, string? arquivo)
+        public static string Combina(string? pasta, string? arquivo)
         {
-            if (string.IsNullOrEmpty(pasta) && string.IsNullOrEmpty(arquivo)) return null;
-            if (string.IsNullOrEmpty(pasta)) return arquivo;
+            if (string.IsNullOrEmpty(pasta) && string.IsNullOrEmpty(arquivo)) return string.Empty;
+            if (string.IsNullOrEmpty(pasta)) return arquivo ?? string.Empty; // Ensure non-null return
             if (string.IsNullOrEmpty(arquivo)) return pasta;
             return Path.Combine(pasta, arquivo);
         }

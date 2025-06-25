@@ -42,7 +42,7 @@ namespace Yordi.Tools
         public event MyRows? ProgressMax;
         public event MyError? ErroEvent;
         public event MyException? ExceptionEvent;
-        protected internal virtual void Message(string mensagem, [CallerMemberName] string origem = "", [CallerLineNumber] int line = 0, [CallerFilePath] string path = "")
+        protected internal virtual void Message(string? mensagem, [CallerMemberName] string origem = "", [CallerLineNumber] int line = 0, [CallerFilePath] string path = "")
         {
             if (string.IsNullOrEmpty(mensagem)) return;
             MessageEvent?.Invoke(mensagem, origem, line, path);
@@ -54,7 +54,7 @@ namespace Yordi.Tools
             _msg = string.IsNullOrEmpty(origem) ? mensagem : $"[{origem}:{line}] {mensagem}";
             _logger.LogInformation(mensagem, origem, line);
         }
-        protected internal virtual void Error(string mensagem, [CallerMemberName] string origem = "", [CallerLineNumber] int line = 0, [CallerFilePath] string path = "")
+        protected internal virtual void Error(string? mensagem, [CallerMemberName] string origem = "", [CallerLineNumber] int line = 0, [CallerFilePath] string path = "")
         {
             if (string.IsNullOrEmpty(mensagem)) return;
             ErroEvent?.Invoke(mensagem, origem, line, path);

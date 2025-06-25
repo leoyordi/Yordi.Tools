@@ -68,6 +68,10 @@ namespace Yordi.Tools
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether verbose logging is enabled.
+        /// </summary>
+        public bool? Verbose { get; set; } = false;
 
         /// <summary>
         /// Monta string de conexão baseado nas propiedades da classe. Substitui a propriedade ConnectionString
