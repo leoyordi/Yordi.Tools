@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/ReleaseAndNuget.ps1
+/ReleaseAndNuget.ps1
