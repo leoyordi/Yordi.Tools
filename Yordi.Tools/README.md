@@ -1,233 +1,805 @@
 ﻿# Yordi.Tools
-Ferramentas simples .NET para trabalhar com arquivos, strings, números, datas, etc.
 
-## Classes e Ferramentas
+![NuGet](https://img.shields.io/nuget/v/Yordi.Tools) ![License](https://img.shields.io/github/license/leoyordi/Yordi.Tools)
 
-### ValidaObjetos
-Uma classe para validação de diferentes tipos de dados.
+**Yordi.Tools** é uma biblioteca .NET 8 com ferramentas essenciais para desenvolvimento de sistemas, oferecendo funcionalidades prontas para trabalhar com arquivos, validações, conversões, criptografia, logging, rede e muito mais.
 
-#### Métodos
-- `IsEmail(string email)`: Verifica se uma string é um endereço de e-mail válido.
-- `IsCPF(string cpf)`: Verifica se uma string é um CPF válido.
-- `IsCNPJ(string cnpj)`: Verifica se uma string é um CNPJ válido.
-- `IsFone(string fone)`: Verifica se uma string é um número de telefone válido.
-- `IsCircuito(string circuito)`: Verifica se uma string é um circuito válido.
-- `IsMacAddress(string macAddress)`: Verifica se uma string é um endereço MAC válido.
-- `IsIPv4(string value)`: Verifica se uma string é um endereço IPv4 válido.
-- `IsIP(string value, out IPAddress? address)`: Verifica se uma string é um endereço IP válido.
-- `IsURL(string value)`: Verifica se uma string é uma URL válida.
-- `IsIPorURL(string value)`: Verifica se uma string é um endereço IP ou URL válido.
-- `IsInt(string value, out int valor)`: Verifica se uma string pode ser convertida para um inteiro.
-- `IsDouble(string value, out double valor)`: Verifica se uma string pode ser convertida para um double.
-- `IsEnumValid(Enum enumValue, int value, int minValue, int maxValue)`: Verifica se um valor é válido para um enum.
+## 📦 Instalação
 
-### LoggerYordi
-Uma classe para logging.
+Instale o pacote via NuGet Package Manager:
 
-#### Métodos
-- `LoggerInstance(string path = "")`: Retorna uma instância do logger.
-- `BeginScope<TState>(TState state)`: Inicia um escopo de logging.
-- `IsEnabled(LogLevel logLevel)`: Verifica se um nível de log está habilitado.
-- `Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)`: Registra uma mensagem de log.
+```bash
+dotnet add package Yordi.Tools
+```
 
-### NewGuid
-Uma classe para gerar GUIDs sequenciais.
+Ou via Package Manager Console:
 
-#### Métodos
-- `NewSequentialGuid()`: Gera um novo GUID sequencial baseado no timestamp e tipo de banco de dados.
+```powershell
+Install-Package Yordi.Tools
+```
 
-### FileTools
-Uma classe para operações comuns com arquivos.
+## 🎯 Sobre a Solução
 
-#### Métodos
-- `ReadAllTextAsync(string? filePath, Encoding? encoding = null)`: Lê todo o conteúdo de um arquivo de forma assíncrona.
-- `ReadAllText(string? filePath)`: Lê todo o conteúdo de um arquivo.
-- `ReadAllLines(string? filePath, Encoding? encoding = null)`: Lê todas as linhas de um arquivo e retorna como um array de strings.
-- `WriteText(string? filePath, string text, Encoding? encoding = null, bool replace = false)`: Escreve texto em um arquivo.
-- `WriteAllBytes(string? filePath, byte[] bytes, bool replace = false)`: Escreve bytes em um arquivo.
-- `WriteTextAsync(string? filePath, string text, Encoding? encoding = null)`: Escreve texto em um arquivo de forma assíncrona.
-- `DetectFileEncoding(string? filename, Encoding? defaultEncoding = null)`: Detecta a codificação de um arquivo.
-- `NomeArquivo(string? filePath)`: Retorna o nome do arquivo de um caminho especificado.
-- `PastaSomente(string? nomeArquivoCompleto)`: Retorna o nome da pasta de um caminho especificado.
-- `PastaTemporaria()`: Retorna o caminho da pasta temporária.
-- `NomeArquivoSemExtensao(string? filePath)`: Retorna o nome do arquivo sem a extensão.
-- `Extensao(string? filePath)`: Retorna a extensão do arquivo.
-- `GetBuildDate()`: Retorna a data de compilação do assembly.
-- `ArquivoExiste(string? arquivo)`: Verifica se um arquivo existe.
-- `PastaExiste(string? pasta)`: Verifica se uma pasta existe.
-- `CriaDiretorio(string? path)`: Cria um diretório.
-- `Combina(string? pasta, string? arquivo)`: Combina uma pasta e um arquivo em um caminho.
-- `UltimoLog(string? pasta)`: Retorna o último arquivo de log na pasta especificada.
-- `LogDiaAnterior(string? pasta)`: Retorna o arquivo de log do dia anterior na pasta especificada.
-- `Excluir(string? arquivo)`: Exclui um arquivo.
-- `Mover(string? arquivoOrigem, string? arquivoDestino)`: Move um arquivo de origem para um arquivo de destino.
-- `DataCriacao(string? arq)`: Retorna a data de criação de um arquivo.
-- `DataAtualizacao(string? arq)`: Retorna a data de atualização de um arquivo.
-- `ArquivosPorData(string? folder, string? criteria, DateTime ultimoLidoUTC)`: Retorna um dicionário de arquivos modificados após uma data específica.
-- `Arquivos(string? pasta, string? criterio = "*.log", bool? topDirectoryOnly = true)`: Retorna os arquivos de uma pasta com base em um critério.
-- `ListarArquivos(string? pasta, string? criterio, bool? topDirectoryOnly = true)`: Retorna uma lista preguiçosa de arquivos em um diretório com base em critérios.
-- `Excluir(string pasta, string extensao, DateTime olderThan)`: Exclui arquivos mais antigos que uma data específica.
+Esta solução é composta por:
 
-### EventBaseClass
-Uma classe base para eventos.
+- **Yordi.Tools**: Biblioteca principal com todas as ferramentas e utilitários
+- **Yordi.Tools.ConsoleApp**: Aplicação console para testes e exemplos (não incluída no pacote NuGet)
 
-#### Métodos
-- `Message(string mensagem, string origem = "", int line = 0, string path = "")`: Dispara um evento de mensagem.
-- `Error(string mensagem, string origem = "", int line = 0, string path = "")`: Dispara um evento de erro.
-- `Error(Exception e, string origem = "", int line = 0, string path = "")`: Dispara um evento de exceção.
-- `Rows(float registros)`: Dispara um evento de quantidade de registros.
-- `Progresso(float progresso)`: Dispara um evento de progresso.
+### Requisitos
 
-### DataPadrao
-Uma classe para manipulação de datas padrão.
+- .NET 8.0 ou superior
+- Microsoft.Extensions.Logging 8.0.1
+- System.Management 8.0.0 (para funcionalidades de rede no Windows)
 
-#### Propriedades
-- `Brasilia`: Retorna a data e hora atual de Brasília.
-- `Maquina`: Retorna a data e hora atual da máquina.
-- `DataBrasiliaToMSSQL`: Retorna a data e hora atual de Brasília no formato MSSQL.
-- `MinValue`: Retorna a data mínima no MySQL.
+---
 
-### Cripto
-Uma classe para criptografia.
+## 🛠️ Componentes Principais
 
-#### Métodos
-- `GetKey()`: Gera a chave de criptografia válida.
-- `Encrypt(string texto)`: Criptografa um texto.
-- `Decrypt(string textoCriptografado)`: Descriptografa um texto criptografado.
+### 1. ValidaObjetos
+Classe para validação de diferentes tipos de dados comuns no Brasil e no mundo.
 
-### Conversores
-Uma classe para conversão de tipos de dados.
+**Métodos disponíveis:**
+- `IsEmail(string email)`: Valida endereço de e-mail
+- `IsCPF(string cpf)`: Valida CPF brasileiro
+- `IsCNPJ(string cnpj)`: Valida CNPJ brasileiro
+- `IsFone(string fone)`: Valida número de telefone
+- `IsCircuito(string circuito)`: Valida circuito de rede
+- `IsMacAddress(string macAddress)`: Valida endereço MAC
+- `IsIPv4(string value)`: Valida endereço IPv4
+- `IsIP(string value, out IPAddress? address)`: Valida endereço IP e retorna o objeto IPAddress
+- `IsURL(string value)`: Valida URL
+- `IsIPorURL(string value)`: Valida IP ou URL
+- `IsInt(string value, out int valor)`: Valida e converte para inteiro
+- `IsDouble(string value, out double valor)`: Valida e converte para double
+- `IsEnumValid(Enum enumValue, int value, int minValue, int maxValue)`: Valida valor de enum
 
-#### Métodos
-- `ToDataHora(string expressao)`: Converte uma string para DateTime.
-- `ToDataHora(object objeto)`: Converte um objeto para DateTime.
-- `DateToString(DateTime dataHora)`: Converte um DateTime para string no formato "yyyy-MM-dd HH:mm:ss".
-- `ToDecimal(string? expressao)`: Converte uma string para decimal.
-- `ToDecimal(object? expressao)`: Converte um objeto para decimal.
-- `ToDouble(string? expressao)`: Converte uma string para double.
-- `ToDouble(object? expressao)`: Converte um objeto para double.
-- `ToInt(string? expressao)`: Converte uma string para int.
-- `ToInt(object? expressao)`: Converte um objeto para int.
-- `ToInt(bool valor)`: Converte um bool para int.
-- `ToInt(this bool? valor)`: Converte um bool? para int?.
-- `ToBool(int valor)`: Converte um int para bool.
-- `ToBool(string? expressao)`: Converte uma string para bool.
-- `ToBool(object? objeto)`: Converte um objeto para bool.
-- `ToBool(this int? valor)`: Converte um int? para bool?.
-- `PropriedadeTipo(PropertyInfo p)`: Retorna o tipo de uma propriedade.
-- `Right(string value, int size)`: Retorna os últimos caracteres de uma string.
-- `SubstituiDiacritico(this string texto)`: Substitui caracteres diacríticos em uma string.
-- `RemoveCaracteresEspeciais(this string texto, bool aceitaEspaco = true, bool substituiAcentos = false, bool substituiPontos = true)`: Remove caracteres especiais de uma string.
-- `RemovePontos(this string texto)`: Remove pontos de uma string.
-- `ToVersion(string texto)`: Converte uma string para Version.
-- `RetornaNumeros(string texto)`: Retorna apenas os números de uma string.
-- `ToJson<T>(T? obj, bool writeIndent = false)`: Converte um objeto para JSON.
-- `ToJson(this object? obj, bool writeIndent = false)`: Converte um objeto para JSON.
-- `ToJsonUtf8(Object obj)`: Converte um objeto para JSON em bytes UTF-8.
-- `FromJson<T>(string obj) where T : class`: Converte uma string JSON para um objeto.
-- `FromJson(string? obj, Type type)`: Converte uma string JSON para um objeto de um tipo específico.
-- `FromJson(string? obj, string? assemblyQualifiedName)`: Converte uma string JSON para um objeto de um tipo específico.
-- `FromJson<T>(byte[] bytes) where T : class`: Converte bytes JSON para um objeto.
-- `FromJson(byte[] obj, Type type)`: Converte bytes JSON para um objeto de um tipo específico.
-- `FromJson(byte[] obj, string assemblyQualifiedName)`: Converte bytes JSON para um objeto de um tipo específico.
+**Exemplo:**
+```csharp
+using Yordi.Tools;
 
+bool emailValido = ValidaObjetos.IsEmail("usuario@example.com");
+bool cpfValido = ValidaObjetos.IsCPF("123.456.789-09");
 
-## RepositórioFile
+if (ValidaObjetos.IsInt("123", out int numero))
+{
+    Console.WriteLine($"Número válido: {numero}");
+}
+```
 
-A classe `RepositorioFile<T>` é um repositório em arquivo no formato JSON. Ela oferece métodos para salvar e ler objetos do tipo `T` em arquivos JSON, além de métodos para ler e escrever texto diretamente em arquivos.
+---
 
-### Funcionalidades
+### 2. FileTools
+Classe com operações avançadas para trabalhar com arquivos e diretórios.
 
-- **Salvar(T objeto)**: Salva o objeto informado no arquivo especificado.
-- **Ler()**: Lê o arquivo, converte-o no tipo informado e devolve o objeto.
-- **LerAsync()**: Modo assíncrono para ler o arquivo e converter no tipo informado.
-- **LerComoTexto()**: Lê o arquivo base e devolve-o em formato texto, sem conversão.
-- **LerComoTexto(string arquivo)**: Lê o arquivo informado e devolve-o em formato texto, sem conversão.
-- **LerLinhas(string arquivo)**: Devolve o conteúdo do arquivo em linhas, dentro de uma array de string.
-- **Escrever(string texto)**: Escreve um texto no arquivo base.
-- **Escrever(string texto, string arquivo)**: Escreve o texto no arquivo informado de forma assíncrona.
+**Principais métodos:**
 
-### Exemplo de Uso
-1. Exemplo para salvar configurações em um arquivo JSON:
+**Leitura:**
+- `ReadAllText(string? filePath)`: Lê todo o conteúdo de um arquivo
+- `ReadAllTextAsync(string? filePath, Encoding? encoding = null)`: Leitura assíncrona
+- `ReadAllLines(string? filePath, Encoding? encoding = null)`: Lê todas as linhas
+- `DetectFileEncoding(string? filename, Encoding? defaultEncoding = null)`: Detecta codificação
+
+**Escrita:**
+- `WriteText(string? filePath, string text, Encoding? encoding = null, bool replace = false)`: Escreve texto
+- `WriteTextAsync(string? filePath, string text, Encoding? encoding = null)`: Escrita assíncrona
+- `WriteAllBytes(string? filePath, byte[] bytes, bool replace = false)`: Escreve bytes
+
+**Manipulação:**
+- `NomeArquivo(string? filePath)`: Retorna nome do arquivo
+- `PastaSomente(string? nomeArquivoCompleto)`: Retorna apenas o caminho da pasta
+- `NomeArquivoSemExtensao(string? filePath)`: Retorna nome sem extensão
+- `Extensao(string? filePath)`: Retorna a extensão
+- `Combina(string? pasta, string? arquivo)`: Combina pasta e arquivo
+- `CriaDiretorio(string? path)`: Cria diretório
+- `Excluir(string? arquivo)`: Exclui arquivo
+- `Mover(string? arquivoOrigem, string? arquivoDestino)`: Move arquivo
+
+**Utilitários:**
+- `ArquivoExiste(string? arquivo)`: Verifica existência
+- `PastaExiste(string? pasta)`: Verifica existência de pasta
+- `PastaTemporaria()`: Retorna caminho da pasta temporária
+- `DataCriacao(string? arq)`: Data de criação
+- `DataAtualizacao(string? arq)`: Data de modificação
+- `Arquivos(string? pasta, string? criterio = "*.log", bool? topDirectoryOnly = true)`: Lista arquivos
+- `Excluir(string pasta, string extensao, DateTime olderThan)`: Exclui arquivos antigos
+
+**Exemplo:**
+```csharp
+using Yordi.Tools;
+
+// Ler arquivo
+string conteudo = FileTools.ReadAllText("config.txt");
+
+// Escrever arquivo
+FileTools.WriteText("log.txt", "Mensagem de log", replace: false);
+
+// Listar arquivos
+var arquivos = FileTools.Arquivos(@"C:\Logs", "*.log");
+```
+
+---
+
+### 3. FileRepository<T>
+Repositório genérico para persistência de objetos em arquivos JSON.
+
+**Características:**
+- Serialização/deserialização automática para JSON
+- Suporte a leitura e escrita assíncrona
+- Herda de `EventBaseClass` para notificações de eventos
+- Suporte a encoding personalizável
+- Substituição automática de placeholders (%TEMP%, DATA)
+
+**Métodos:**
+- `Salvar(T objeto)`: Salva objeto no arquivo
+- `Ler()`: Lê e deserializa o objeto
+- `LerAsync()`: Leitura assíncrona
+- `LerComoTexto()`: Lê como texto puro
+- `LerLinhas(string arquivo)`: Lê em formato de linhas
+- `Escrever(string texto)`: Escreve texto no arquivo
+- `Escrever(string texto, string arquivo)`: Escrita assíncrona
+
+**Exemplo 1 - Configurações simples:**
 ```csharp
 using System.Text; 
 using Yordi.Tools;
+
+public class Configuracao
+{
+    public string Usuario { get; set; }
+    public string Servidor { get; set; }
+    public int Porta { get; set; }
+}
+
 public class Program 
 { 
     public static void Main() 
     { 
-        var repo = new RepositorioFile<MyClass>("caminho/para/arquivo.json", Encoding.UTF8);
-        // Salvar um objeto
-        var myObject = new MyClass { Property1 = "Valor1", Property2 = "Valor2" };
-        repo.Salvar(myObject);
-        // Ler um objeto
-        var loadedObject = repo.Ler();
-        // Ler um arquivo como texto
-        var texto = repo.LerComoTexto();
+        var repo = new FileRepository<Configuracao>("config.json", Encoding.UTF8);
+        
+        // Salvar
+        var config = new Configuracao 
+        { 
+            Usuario = "admin", 
+            Servidor = "localhost",
+            Porta = 8080
+        };
+        repo.Salvar(config);
+        
+        // Ler
+        var configLida = repo.Ler();
+        Console.WriteLine($"Servidor: {configLida.Servidor}");
     }
-}
-public class MyClass 
-{ 
-    public string Property1 { get; set; } 
-    public string Property2 { get; set; } 
 }
 ```
 
-2. Exemplo para salvar uma lista de objetos em um arquivo JSON:
-
+**Exemplo 2 - Lista de objetos com singleton:**
 ```csharp
 using System.Text;
 using Yordi.Tools;
-public class MyRepo : RepositorioFile<IEnumerable<MyClass>>
-{
-    private static MyRepo _instance;
-    private MyRepo(string path) : base(path, Encoding.UTF8)  { }
-    public static MyRepo Instance => _instance ??= _new MyRepo("caminho/para/arquivo.json");
 
-    public bool Salvar(MyClass objeto)
+public class Cliente
+{
+    public int Id { get; set; }
+    public string Nome { get; set; }
+    public string Email { get; set; }
+}
+
+public class ClienteRepository : FileRepository<List<Cliente>>
+{
+    private static ClienteRepository? _instance;
+    
+    private ClienteRepository(string path) : base(path, Encoding.UTF8) { }
+    
+    public static ClienteRepository Instance => 
+        _instance ??= new ClienteRepository("clientes.json");
+
+    public bool AdicionarCliente(Cliente cliente)
     {
-        var list = Ler().ToList();
-        list.Add(objeto);
-        return base.Salvar(list);
-    }    
+        var lista = Ler() ?? new List<Cliente>();
+        lista.Add(cliente);
+        return base.Salvar(lista);
+    }
+    
+    public Cliente? BuscarPorId(int id)
+    {
+        var lista = Ler();
+        return lista?.FirstOrDefault(c => c.Id == id);
+    }
 }
 ```
 
-## Instalação
+---
 
-Para instalar o pacote, use o seguinte comando:
+### 4. Conversores
+Classe com métodos de conversão entre tipos de dados e formatos.
 
-<pre>dotnet add package Yordi.Tools</pre>
+**Conversão de Tipos:**
+- `ToDataHora(string/object)`: Converte para DateTime
+- `DateToString(DateTime)`: Converte DateTime para string (formato: yyyy-MM-dd HH:mm:ss)
+- `ToDecimal(string/object)`: Converte para decimal
+- `ToDouble(string/object)`: Converte para double
+- `ToInt(string/object/bool)`: Converte para int
+- `ToBool(int/string/object)`: Converte para bool
+- `ToVersion(string)`: Converte para Version
 
+**Manipulação de Strings:**
+- `Right(string value, int size)`: Retorna últimos caracteres
+- `SubstituiDiacritico(string)`: Remove acentos
+- `RemoveCaracteresEspeciais(string)`: Remove caracteres especiais
+- `RemovePontos(string)`: Remove pontos
+- `RetornaNumeros(string)`: Retorna apenas números
 
-## Uso
+**JSON:**
+- `ToJson<T>(T obj, bool writeIndent = false)`: Serializa para JSON
+- `ToJsonUtf8(object)`: Serializa para JSON em bytes UTF-8
+- `FromJson<T>(string/byte[])`: Deserializa de JSON
+- `FromJson(string/byte[], Type)`: Deserializa para tipo específico
 
-Aqui estão alguns exemplos de como usar as ferramentas:
+**Exemplo:**
 ```csharp
 using Yordi.Tools;
-// Exemplo de uso do ValidaObjetos bool isEmail = ValidaObjetos.IsEmail("example@example.com"); bool isCPF = ValidaObjetos.IsCPF("123.456.789-09");
-// Exemplo de uso do LoggerYordi var logger = LoggerYordi.LoggerInstance(); logger.Log(LogLevel.Information, new EventId(), "Mensagem de log", null, (state, exception) => state.ToString());
-// Exemplo de uso do NewGuid Guid newGuid = NewGuid.NewSequentialGuid();
-// Exemplo de uso do FileTools string content = FileTools.ReadAllText("example.txt"); FileTools.WriteText("example.txt", "Hello, World!");
-// Exemplo de uso do EventBaseClass var eventBase = new EventBaseClass(); eventBase.Message("Mensagem de evento");
-// Exemplo de uso do DataPadrao DateTime brasiliaTime = DataPadrao.Brasilia;
-// Exemplo de uso do Cripto var cripto = new Cripto("chave"); string encrypted = cripto.Encrypt("texto"); string? decrypted = cripto.Decrypt(encrypted);
-// Exemplo de uso do Conversores int intValue = Conversores.ToInt("123"); bool boolValue = Conversores.ToBool("true");
+
+// Conversões
+int numero = Conversores.ToInt("123");
+bool ativo = Conversores.ToBool("true");
+DateTime data = Conversores.ToDataHora("2024-01-15");
+
+// Manipulação de strings
+string texto = "João José";
+string semAcento = texto.SubstituiDiacritico(); // "Joao Jose"
+string apenasNumeros = Conversores.RetornaNumeros("ABC123XYZ"); // "123"
+
+// JSON
+var objeto = new { Nome = "João", Idade = 30 };
+string json = Conversores.ToJson(objeto, writeIndent: true);
+var objetoRecuperado = Conversores.FromJson<dynamic>(json);
 ```
 
+---
 
-## Contribuição
+### 5. Cripto
+Classe para criptografia simétrica de textos.
 
-Se você quiser contribuir para o projeto, por favor, siga as diretrizes de contribuição.
+**Métodos:**
+- `GetKey()`: Gera chave de criptografia válida
+- `Encrypt(string texto)`: Criptografa texto
+- `Decrypt(string textoCriptografado)`: Descriptografa texto
 
-## Licença
+**Exemplo:**
+```csharp
+using Yordi.Tools;
 
-Este projeto está licenciado sob a licença MIT.
+var cripto = new Cripto("minhaChaveSecreta123");
 
-## Changelog
-- **v1.0.11**:
-  - Corrigido bug em Conversores.FromJson. Quando o AssemblyQualifiedName era string, o método não conseguia converter o JSON para o tipo correto.
-- **v1.0.10**: 
-  - Classe Cripto corrigida. A palavra-chave convertida poderia ter dois valores se a mesma instância fosse usada mais de uma vez.
-  - Acréscimo de um projeto do tipo console para testes. Não acompanha o pacote nugget. Versionamento seguirá com base na dll
-- **v1.0.9**: Adicionada a classe `RepositorioFile<T>` para facilitar o trabalho com arquivos JSON.
+string textoOriginal = "Senha123";
+string textoCriptografado = cripto.Encrypt(textoOriginal);
+string textoDescriptografado = cripto.Decrypt(textoCriptografado);
+
+Console.WriteLine($"Original: {textoOriginal}");
+Console.WriteLine($"Criptografado: {textoCriptografado}");
+Console.WriteLine($"Descriptografado: {textoDescriptografado}");
+```
+
+---
+
+### 6. LoggerYordi
+Sistema de logging integrado com Microsoft.Extensions.Logging.
+
+**Métodos:**
+- `LoggerInstance(string path = "")`: Retorna instância do logger
+- `BeginScope<TState>(TState state)`: Inicia escopo de logging
+- `IsEnabled(LogLevel logLevel)`: Verifica se nível está habilitado
+- `Log<TState>(...)`: Registra mensagem de log
+
+**Exemplo:**
+```csharp
+using Yordi.Tools;
+using Microsoft.Extensions.Logging;
+
+var logger = LoggerYordi.LoggerInstance("logs/app.log");
+logger.LogInformation("Aplicação iniciada");
+logger.LogWarning("Atenção: configuração ausente");
+logger.LogError("Erro ao conectar ao banco de dados");
+```
+
+---
+
+### 7. EventBaseClass
+Classe base para implementação de eventos customizados em suas classes.
+
+**Eventos disponíveis:**
+- `OnMessage`: Evento de mensagem informativa
+- `OnError`: Evento de erro
+- `OnException`: Evento de exceção
+- `OnRows`: Evento de quantidade de registros
+- `OnProgresso`: Evento de progresso
+
+**Métodos:**
+- `Message(string mensagem, string origem = "", int line = 0, string path = "")`: Dispara evento de mensagem
+- `Error(string mensagem, string origem = "", int line = 0, string path = "")`: Dispara evento de erro
+- `Error(Exception e, string origem = "", int line = 0, string path = "")`: Dispara evento de exceção
+- `Rows(float registros)`: Dispara evento de registros
+- `Progresso(float progresso)`: Dispara evento de progresso
+
+**Exemplo:**
+```csharp
+using Yordi.Tools;
+
+public class MeuProcessador : EventBaseClass
+{
+    public void ProcessarDados()
+    {
+        Message("Iniciando processamento...");
+        
+        try
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                // Processar...
+                Progresso(i / 100f);
+            }
+            
+            Rows(100);
+            Message("Processamento concluído");
+        }
+        catch (Exception ex)
+        {
+            Error(ex);
+        }
+    }
+}
+
+// Uso
+var processador = new MeuProcessador();
+processador.OnMessage += (msg, origem, line, path) => 
+    Console.WriteLine($"[INFO] {msg}");
+processador.OnProgresso += (prog) => 
+    Console.WriteLine($"Progresso: {prog:P0}");
+processador.ProcessarDados();
+```
+
+---
+
+### 8. NewGuid (GuidSequence)
+Gerador de GUIDs sequenciais otimizados para diferentes bancos de dados.
+
+**Características:**
+- GUIDs sequenciais melhoram performance de índices
+- Suporte para MySQL, Oracle e SQL Server
+- Baseado em timestamp para ordenação
+
+**Tipos:**
+- `TipoGuid.MySQL`: Ordem alfabética
+- `TipoGuid.Oracle`: Ordem binária
+- `TipoGuid.MSSQL`: Ordem baseada nos últimos 6 bytes (padrão)
+
+**Exemplo:**
+```csharp
+using Yordi.Tools;
+
+// Configurar para SQL Server (padrão)
+NewGuid.TipoGuid = TipoGuid.MSSQL;
+Guid guid1 = NewGuid.NewSequentialGuid();
+
+// Configurar para MySQL
+NewGuid.TipoGuid = TipoGuid.MySQL;
+Guid guid2 = NewGuid.NewSequentialGuid();
+
+Console.WriteLine($"GUID SQL Server: {guid1}");
+Console.WriteLine($"GUID MySQL: {guid2}");
+```
+
+---
+
+### 9. DataPadrao
+Classe para manipulação de datas com timezone de Brasília.
+
+**Propriedades:**
+- `Brasilia`: Data/hora atual de Brasília
+- `Maquina`: Data/hora atual da máquina
+- `DataBrasiliaToMSSQL`: Data/hora de Brasília formatada para SQL Server
+- `MinValue`: Data mínima compatível com MySQL
+
+**Exemplo:**
+```csharp
+using Yordi.Tools;
+
+DateTime agora = DataPadrao.Brasilia;
+DateTime agoraMaquina = DataPadrao.Maquina;
+string dataSQL = DataPadrao.DataBrasiliaToMSSQL;
+
+Console.WriteLine($"Brasília: {agora}");
+Console.WriteLine($"SQL Server: {dataSQL}");
+```
+
+---
+
+### 10. Rede
+Classe com utilitários para trabalhar com redes e endereços.
+
+**Métodos:**
+- `IP()`: Retorna IP externo (async)
+- `MeuMACAddress(IPAddress ip)`: Retorna endereço MAC
+- `MeuMacAddressForWindows()`: Retorna MACs físicos (Windows)
+- `MeuMacAddressForWindows(IPAddress ip)`: Retorna MAC específico (Windows)
+- `GetIP(string host)`: Resolve hostname para IP
+
+**Exemplo:**
+```csharp
+using Yordi.Tools;
+using System.Net;
+
+// IP externo
+string? ipExterno = await Rede.IP();
+Console.WriteLine($"Meu IP: {ipExterno}");
+
+// MAC Address
+var ip = IPAddress.Parse("192.168.1.100");
+string? mac = Rede.MeuMACAddress(ip);
+
+// Resolver hostname
+IPAddress? ipResolvido = Rede.GetIP("www.google.com");
+```
+
+---
+
+### 11. POCObase e Atributos
+Classes base e atributos para trabalhar com entidades e mapeamento objeto-relacional.
+
+**Classes Base:**
+- `CommonColumns`: Colunas comuns (DataInclusao, DataAlteracao, Usuario, Origem)
+- `Basico`: Entidade básica com Auto (ID) e Descricao
+
+**Atributos disponíveis:**
+- `[AutoIncrement]`: Campo auto-incremento
+- `[BDIgnorar]`: Ignorar no banco de dados
+- `[Exibir]`: DisplayMember para controles
+- `[Valor]`: ValueMember para controles
+- `[AutoUpdateDate]`: Atualização automática de data
+- `[AutoInsertDate]`: Data de inserção automática
+- `[OnlyInsert]`: Apenas para inserção
+- `[OnlyUpdate]`: Apenas para atualização
+- `[Tamanho("(100)")]`: Define tamanho de campo
+- `[POCOtoDB(POCOType.CADASTRO)]`: Marca tipo de entidade
+
+**Exemplo:**
+```csharp
+using Yordi.Tools;
+
+[POCOtoDB(POCOType.CADASTRO)]
+public class Produto : Basico
+{
+    [Tamanho("(100)")]
+    public string? CodigoBarras { get; set; }
+    
+    public decimal Preco { get; set; }
+    
+    public int Estoque { get; set; }
+    
+    [BDIgnorar]
+    public decimal PrecoComDesconto => Preco * 0.9m;
+}
+
+// Uso
+var produto = new Produto 
+{ 
+    Auto = 1,
+    Descricao = "Notebook",
+    CodigoBarras = "7891234567890",
+    Preco = 3000.00m,
+    Estoque = 10
+};
+
+Console.WriteLine(produto.ToString()); // [1] Notebook
+```
+
+---
+
+### 12. IPOCOIndexes - Definição de Índices para Banco de Dados
+
+Interface que permite classes POCO especificarem índices que devem ser criados no banco de dados.
+
+**Interface:**
+```csharp
+public interface IPOCOIndexes
+{
+    IEnumerable<IndexInfo> GetIndexes();
+}
+```
+
+**Classe IndexInfo:**
+```csharp
+public class IndexInfo
+{
+    public string IndexName { get; set; }        // Nome do índice
+    public List<string> Columns { get; set; }    // Colunas do índice
+    public bool IsUnique { get; set; }           // Se é UNIQUE INDEX
+    public IEnumerable<Chave> Chaves { get; set; } // Chaves detalhadas para cláusulas WHERE se necessárias
+}
+```
+
+**Quando usar:**
+- Quando sua entidade precisa de índices personalizados no banco de dados
+- Para otimização de consultas frequentes
+- Para garantir unicidade de combinações de campos
+- Para índices compostos (múltiplas colunas)
+
+**Exemplo:**
+```csharp
+using Yordi.Tools;
+
+[POCOtoDB(POCOType.CADASTRO)]
+public class Produto : Basico, IPOCOIndexes
+{
+    public string? CodigoBarras { get; set; }
+    public string? Fabricante { get; set; }
+    public string? Categoria { get; set; }
+    public decimal Preco { get; set; }
+
+    public IEnumerable<IPOCOIndexes.IndexInfo> GetIndexes()
+    {
+        return new List<IPOCOIndexes.IndexInfo>
+        {
+            // Índice único para código de barras
+            new IPOCOIndexes.IndexInfo
+            {
+                IndexName = "IX_Produto_CodigoBarras",
+                Columns = new List<string> { "CodigoBarras" },
+                IsUnique = true
+            },
+            
+            // Índice composto para consultas por fabricante e categoria
+            new IPOCOIndexes.IndexInfo
+            {
+                IndexName = "IX_Produto_Fabricante_Categoria",
+                Columns = new List<string> { "Fabricante", "Categoria" },
+                IsUnique = false
+            },
+            
+            // Índice com chaves detalhadas. Define cláusula WHERE para otimização
+            new IPOCOIndexes.IndexInfo
+            {
+                IndexName = "IX_Produto_Preco",
+                Columns = new List<string> { "Preco" },
+                IsUnique = false,
+                Chaves = new List<Chave>
+                {
+                    new Chave
+                    {
+                        Campo = "Preco",
+                        Tipo = Tipo.MONEY,
+                        Operador = Operador.MAIORque
+                    }
+                }
+            }
+        };
+    }
+}
+```
+
+**Cenários práticos:**
+
+1. **E-commerce - Busca rápida de produtos:**
+```csharp
+public class Produto : Basico, IPOCOIndexes
+{
+    public string? SKU { get; set; }
+    public string? Nome { get; set; }
+    public decimal Preco { get; set; }
+    
+    public IEnumerable<IPOCOIndexes.IndexInfo> GetIndexes()
+    {
+        return new[]
+        {
+            new IPOCOIndexes.IndexInfo
+            {
+                IndexName = "IX_Produto_SKU",
+                Columns = new List<string> { "SKU" },
+                IsUnique = true
+            },
+            new IPOCOIndexes.IndexInfo
+            {
+                IndexName = "IX_Produto_Nome_Preco",
+                Columns = new List<string> { "Nome", "Preco" }
+            }
+        };
+    }
+}
+```
+
+2. **Sistema de usuários - Email único:**
+```csharp
+public class Usuario : Basico, IPOCOIndexes
+{
+    public string? Email { get; set; }
+    public string? CPF { get; set; }
+    
+    public IEnumerable<IPOCOIndexes.IndexInfo> GetIndexes()
+    {
+        return new[]
+        {
+            new IPOCOIndexes.IndexInfo
+            {
+                IndexName = "IX_Usuario_Email",
+                Columns = new List<string> { "Email" },
+                IsUnique = true
+            },
+            new IPOCOIndexes.IndexInfo
+            {
+                IndexName = "IX_Usuario_CPF",
+                Columns = new List<string> { "CPF" },
+                IsUnique = true
+            }
+        };
+    }
+}
+```
+
+3. **Retornar null quando não há índices:**
+```csharp
+public class SimplesEntity : Basico, IPOCOIndexes
+{
+    public string? Nome { get; set; }
+    
+    public IEnumerable<IPOCOIndexes.IndexInfo> GetIndexes()
+    {
+        // Sem índices personalizados
+        return Enumerable.Empty<IPOCOIndexes.IndexInfo>();
+    }
+}
+```
+
+---
+
+### 13. Chave - Classe para Instruções SQL
+
+Classe usada para montar instruções SQL, especialmente relacionadas à cláusula WHERE.
+
+**Propriedades:**
+- `Campo`: Nome do campo no banco de dados
+- `Valor`: Valor do campo
+- `Tipo`: Tipo do campo (usando enum `Tipo`)
+- `Operador`: Operador de comparação (usando enum `Operador`)
+- `Parametro`: Nome do parâmetro SQL
+- `Tabela`: Nome da tabela
+
+**Exemplo:**
+```csharp
+using Yordi.Tools;
+
+var chave = new Chave
+{
+    Campo = "Preco",
+    Valor = 100.00m,
+    Tipo = Tipo.MONEY,
+    Operador = Operador.MAIORque,
+    Parametro = "@preco",
+    Tabela = "Produtos"
+};
+
+// Usado em conjunto com IPOCOIndexes.IndexInfo
+var indexInfo = new IPOCOIndexes.IndexInfo
+{
+    IndexName = "IX_Produtos_Preco",
+    Columns = new List<string> { "Preco" },
+    Chaves = new[] { chave }
+};
+```
+
+---
+
+### 14. Extensions
+Extensões úteis para tipos do .NET.
+
+**ReflectionExtensions:**
+- `GetMethodsWithAttribute(Type, Type)`: Métodos com atributo específico
+- `GetMembersWithAttribute(Type, Type)`: Membros com atributo específico
+- `GetDefaultValue(PropertyInfo)`: Valor padrão de propriedade
+
+**SocketExtensions:**
+- Extensões para trabalhar com Sockets
+
+**Exemplo:**
+```csharp
+using System;
+using System.Reflection;
+
+var tipo = typeof(MinhaClasse);
+var metodosAPI = tipo.GetMethodsWithAttribute(typeof(APIAttribute));
+
+foreach (var metodo in metodosAPI)
+{
+    Console.WriteLine($"Método API: {metodo.Name}");
+}
+```
+
+---
+
+## 📋 Interfaces
+
+- `ICommonColumns`: Define colunas comuns de auditoria
+- `IAuto`: Define propriedade Auto (ID)
+- `IDescricao`: Define propriedade Descricao
+- `IObjectStringIndexer`: Permite acesso a propriedades por string
+- `IPropertyType`: Permite obter tipo de propriedade
+- `IPOCOtoDB`: Marca classes que interagem com banco de dados
+- `IPOCOIndexes`: Define índices de banco de dados para entidades POCO
+- `IChave`: Interface para a classe Chave
+
+---
+
+## 📝 Changelog
+
+### v1.0.14 (atual)
+- **Adição**: Interface `IPOCOIndexes` para definição de índices de banco de dados
+- **Adição**: Classe `IPOCOIndexes.IndexInfo` para especificar detalhes de índices
+- **Adição**: Classe `Chave` para construção de instruções SQL e cláusulas WHERE
+- **Melhoria**: Documentação XML completa para todas as novas interfaces e classes
+
+### v1.0.13 (preterida)
+- Versão estável para .NET 8.0
+- Todas as funcionalidades testadas e validadas
+
+### v1.0.11
+- **Correção**: Bug em `Conversores.FromJson` quando AssemblyQualifiedName era string
+
+### v1.0.10
+- **Correção**: Classe `Cripto` - palavra-chave convertida poderia ter dois valores em reutilização
+- **Adição**: Projeto console para testes (não incluído no NuGet)
+- **Nota**: Versionamento seguirá baseado na DLL principal
+
+### v1.0.9
+- **Adição**: Classe `FileRepository<T>` para trabalhar com arquivos JSON
+
+### Versões anteriores
+- Implementação das classes principais: ValidaObjetos, FileTools, Conversores, LoggerYordi
+- Sistema de eventos com EventBaseClass
+- Utilitários de criptografia, data e rede
+
+---
+
+## 🤝 Contribuição
+
+Contribuições são bem-vindas! Para contribuir:
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
+4. Push para a branch (`git push origin feature/MinhaFeature`)
+5. Abra um Pull Request
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a **Licença MIT**. Veja o arquivo LICENSE para mais detalhes.
+
+---
+
+## 👤 Autor
+
+**Leopoldo Yordi**  
+Yordi Sistemas Inteligentes
+
+- GitHub: [@leoyordi](https://github.com/leoyordi)
+- Repository: [Yordi.Tools](https://github.com/leoyordi/Yordi.Tools)
+
+---
+
+## 🔗 Links Úteis
+
+- [NuGet Package](https://www.nuget.org/packages/Yordi.Tools)
+- [GitHub Repository](https://github.com/leoyordi/Yordi.Tools)
+- [Documentação .NET 8](https://docs.microsoft.com/dotnet/core/whats-new/dotnet-8)
+
+---
+
+## 💡 Suporte
+
+Se você encontrar algum problema ou tiver sugestões, por favor:
+- Abra uma [Issue no GitHub](https://github.com/leoyordi/Yordi.Tools/issues)
+- Entre em contato através do repositório
+
+---
+
+**Yordi.Tools** - Simplificando o desenvolvimento .NET 🚀

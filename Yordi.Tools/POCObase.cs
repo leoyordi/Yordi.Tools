@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 
 namespace Yordi.Tools
 {
@@ -78,4 +79,45 @@ namespace Yordi.Tools
             return $"[{Auto}] {Descricao}";
         }
     }
+
+    /// <summary>
+    /// Interface para classes POCO que precisam definir índices de banco de dados.
+    /// Permite que entidades especifiquem quais índices devem ser criados e verificados no banco de dados.
+    /// </summary>
+    public interface IPOCOIndexes
+    {
+        /// <summary>
+        /// Retorna a lista de índices que devem ser criados para esta entidade no banco de dados.
+        /// </summary>
+        /// <returns>Uma coleção de IndexInfo com as definições dos índices, ou null/vazio se não houver índices.</returns>
+        IEnumerable<IndexInfo> GetIndexes();
+
+        /// <summary>
+        /// Representa a definição de um índice de banco de dados.
+        /// </summary>
+        public class IndexInfo
+        {
+            /// <summary>
+            /// Nome do índice no banco de dados.
+            /// </summary>
+            public string IndexName { get; set; } = string.Empty;
+            
+            /// <summary>
+            /// Lista de colunas que compõem o índice.
+            /// </summary>
+            public List<string> Columns { get; set; } = new List<string>();
+            
+            /// <summary>
+            /// Indica se o índice é único (UNIQUE INDEX).
+            /// </summary>
+            public bool IsUnique { get; set; } = false;
+            
+            /// <summary>
+            /// Coleção de chaves (campos) para compor o índice quando necessário.<br/>
+            /// Se o índice tiver cláusula WHERE, carregar as informações de cada parâmetro do WHERE aqui.
+            /// </summary>
+            public IEnumerable<Chave> Chaves { get; set; } = Enumerable.Empty<Chave>();
+        }
+    }
+
 }
