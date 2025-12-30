@@ -91,7 +91,7 @@ namespace Yordi.Tools
         {
             WriteLog("ERR", message, origem, line, file);
         }
-        public static void LogError(this ILogger logger, Exception e, string message, string origem = "", int line = 0, string file = "")
+        public static void LogError(this ILogger logger, Exception e, string origem = "", int line = 0, string file = "")
         {
             string? s = Logger.LogSync(e, origem, line, file);
             WriteConsole(e);
