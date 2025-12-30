@@ -123,7 +123,7 @@ var arquivos = FileTools.Arquivos(@"C:\Logs", "*.log");
 Repositório genérico para persistência de objetos em arquivos JSON.
 
 **Características:**
-- Serialização/deserialização automática para JSON
+- Serialização/deserializaçã automática para JSON
 - Suporte a leitura e escrita assíncrona
 - Herda de `EventBaseClass` para notificações de eventos
 - Suporte a encoding personalizável
@@ -285,22 +285,53 @@ Console.WriteLine($"Descriptografado: {textoDescriptografado}");
 ### 6. LoggerYordi
 Sistema de logging integrado com Microsoft.Extensions.Logging.
 
-**Métodos:**
-- `LoggerInstance(string path = "")`: Retorna instância do logger
-- `BeginScope<TState>(TState state)`: Inicia escopo de logging
-- `IsEnabled(LogLevel logLevel)`: Verifica se nível está habilitado
-- `Log<TState>(...)`: Registra mensagem de log
+**Observação importante (alteração de comportamento / breaking change)**
 
-**Exemplo:**
+Nas versões recentes houve mudanças na implementação dos logs:
+
+- As APIs de log em `Yordi.Tools.Logger` foram atualizadas para retornar valores informativos em vez de serem apenas `void`/fire-and-forget. Em particular:
+  - `LogAsync(Exception filterContext, string origem = "", int line = 0, string file = "")` agora retorna `Task<string?>` com a linha de log escrita quando a gravação for bem-sucedida, ou `null` em caso de falha.
+  - `LogAsync(string texto, string origem = "", int line = 0, string file = "")` agora retorna `Task<string?>` com a linha de log escrita quando a gravação for bem-sucedida, ou `null` em caso de falha.
+  - `LogSync(Exception filterContext, string origem = "", int line = 0, string file = "")` agora retorna `string?` com a linha de log escrita ou `null` em caso de falha.
+  - `LogSync(string texto, string origem = "", int line = 0, string file = "")` agora retorna `string?` com a linha de log escrita ou `null` em caso de falha.
+
+- A classe `LoggerYordi` (implementação de `Microsoft.Extensions.Logging.ILogger`) continua a implementar `void Log<TState>(...)` conforme a interface, porém internamente passa as entradas para `Logger.LogSync`. Como `Logger.LogSync` agora possui retorno (`string?`), houve alteração de comportamento interno — consumidores que dependiam exclusivamente de efeitos colaterais sem tratamento de retorno devem considerar verificar os novos retornos quando usarem diretamente `Yordi.Tools.Logger`.
+
+- Além disso, agora é recomendado que chamados às APIs de log sejam explícitos quanto aos parâmetros de origem, linha e arquivo (`origem`, `line`, `file`) para garantir que o log contenha contexto útil. Apesar de existirem valores padrão (cadeia vazia / zero), a nova prática é sempre informar explicitamente essas informações para evitar logs sem contexto.
+
+Possível quebra de código (breaking change)
+
+- Se o seu código dependia do comportamento anterior em que as APIs de log eram `void` e nunca retornavam valor, pode haver impacto: agora métodos públicos retornam `string?` ou `Task<string?>`. Atualize chamadas para tratar os retornos (verificar `null` em caso de falha) ou continue a ignorar o retorno conscientemente.
+
+- Exemplo de atualização necessária:
+
 ```csharp
-using Yordi.Tools;
-using Microsoft.Extensions.Logging;
+// Antes (antigo behavior fire-and-forget)
+Yordi.Tools.Logger.LogSync("Aplicação iniciada");
 
-var logger = LoggerYordi.LoggerInstance("logs/app.log");
-logger.LogInformation("Aplicação iniciada");
-logger.LogWarning("Atenção: configuração ausente");
-logger.LogError("Erro ao conectar ao banco de dados");
+// Agora (tratar retorno)
+var resultado = Yordi.Tools.Logger.LogSync("Aplicação iniciada", origem: "Program", line: 42, file: nameof(Program));
+if (resultado == null)
+{
+    // Tratar falha ao gravar log
+}
 ```
+
+- Exemplo assíncrono:
+
+```csharp
+var resultadoAsync = await Yordi.Tools.Logger.LogAsync(new Exception("Erro X"), origem: "Servico", line: 123, file: "Servico.cs");
+if (resultadoAsync == null)
+{
+    // Tratar falha
+}
+else
+{
+    Console.WriteLine(resultadoAsync); // linha completa do log gerada
+}
+```
+
+Recomenda-se revisar chamadas que façam logging em massa ou que assumam sucesso silencioso, pois agora é possível detectar falhas de gravação retornadas pelas novas APIs.
 
 ---
 
@@ -730,7 +761,21 @@ foreach (var metodo in metodosAPI)
 
 ## 📝 Changelog
 
-### v1.0.14 (atual)
+### v1.0.15 (atual)
+- **Alteração importante**: Atualização no sistema de logging.
+  - As APIs de log em `Yordi.Tools.Logger` agora retornam valores informativos em vez de serem apenas `void`/fire-and-forget:
+    - `LogAsync(Exception filterContext, string origem = "", int line = 0, string file = "")` passa a retornar `Task<string?>` (linha do log ou `null` em caso de falha).
+    - `LogAsync(string texto, string origem = "", int line = 0, string file = "")` passa a retornar `Task<string?>`.
+    - `LogSync(Exception filterContext, string origem = "", int line = 0, string file = "")` passa a retornar `string?`.
+    - `LogSync(string texto, string origem = "", int line = 0, string file = "")` passa a retornar `string?`.
+  - A implementação `LoggerYordi` (implementação de `Microsoft.Extensions.Logging.ILogger`) continua a implementar `void Log<TState>(...)` conforme a interface, mas passa internamente as entradas para `Logger.LogSync`, que agora tem retorno — isto pode alterar o comportamento observado por consumidores que dependiam apenas dos efeitos colaterais.
+  - Recomenda-se informar explicitamente os parâmetros `origem`, `line` e `file` ao chamar as APIs de log para garantir contexto útil nas mensagens gravadas.
+
+- **Breaking change**: métodos públicos de logging agora retornam `string?` ou `Task<string?>`. Código que usava as APIs de log como `void` deve ser revisto para tratar (ou conscientemente ignorar) os novos retornos.
+
+- Atualização da documentação `README.md` com exemplos e instruções de migração.
+
+### v1.0.14
 - **Adição**: Interface `IPOCOIndexes` para definição de índices de banco de dados
 - **Adição**: Classe `IPOCOIndexes.IndexInfo` para especificar detalhes de índices
 - **Adição**: Classe `Chave` para construção de instruções SQL e cláusulas WHERE
@@ -744,7 +789,7 @@ foreach (var metodo in metodosAPI)
 - **Correção**: Bug em `Conversores.FromJson` quando AssemblyQualifiedName era string
 
 ### v1.0.10
-- **Correção**: Classe `Cripto` - palavra-chave convertida poderia ter dois valores em reutilização
+- **Correção**: Classe `Cripto` - palavra-chave convertida poderia ter dois valores se a mesma instância fosse usada mais de uma vez
 - **Adição**: Projeto console para testes (não incluído no NuGet)
 - **Nota**: Versionamento seguirá baseado na DLL principal
 

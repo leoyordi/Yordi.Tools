@@ -74,61 +74,38 @@ namespace Yordi.Tools
 
     public static class LoggerYordiExtensions
     {
-        public static void LogWarning(this ILogger logger, string message, 
-            [CallerMemberName] string origem = "",
-            [CallerLineNumber] int line = 0)
+        public static void LogWarning(this ILogger logger, string message, string origem = "", int line = 0, string file = "")
         {
-            // logger.Log(LogLevel.Critical, message, callerMemberName, line);
-            Logger.LogSync(message, origem, line);
-            WriteLine($"[{DataPadrao.Brasilia}] [WRN] [{origem}:{line}] {message}");
+            WriteLog("WAR", message, origem, line, file);
         }
-        public static void LogInformation(this ILogger logger, string message,
-            [CallerMemberName] string origem = "",
-            [CallerLineNumber] int line = 0,
-            [CallerFilePath] string file = "")
+        public static void LogInformation(this ILogger logger, string message, string origem = "", int line = 0, string file = "")
         {
-            string origem2;
-            if (string.IsNullOrEmpty(file))
-                origem2 = origem;
-            else
-                origem2 = $"{FileTools.NomeArquivoSemExtensao(file)}:{origem}";
-            Logger.LogSync(message, origem2, line);
-            WriteLine($"[{DataPadrao.Brasilia}] [INF] [{origem2}:{line}] {message}");
+            WriteLog("INF", message, origem, line, file);
         }
 
-        public static void LogDebug(this ILogger logger, string message,
-            [CallerMemberName] string origem = "",
-            [CallerLineNumber] int line = 0)
+        public static void LogDebug(this ILogger logger, string message, string origem = "", int line = 0, string file = "")
         {
-            Logger.LogSync(message, origem, line);
-            WriteLine($"[{DataPadrao.Brasilia}] [DEB] [{origem}:{line}] {message}");
+            WriteLog("DEB", message, origem, line, file);
         }
-        public static void LogError(this ILogger logger, string message,
-            [CallerMemberName] string origem = "",
-            [CallerLineNumber] int line = 0)
+        public static void LogError(this ILogger logger, string message, string origem = "", int line = 0, string file = "")
         {
-            Logger.LogSync(message, origem, line);
-            WriteLine($"[{DataPadrao.Brasilia}] [ERR] [{origem}:{line}] {message}", true);
+            WriteLog("ERR", message, origem, line, file);
         }
-        public static void LogError(this ILogger logger, Exception e, 
-            [CallerMemberName] string origem = "", 
-            [CallerLineNumber] int line = 0)
+        public static void LogError(this ILogger logger, Exception e, string message, string origem = "", int line = 0, string file = "")
         {
-            Logger.LogSync(e, origem, line);
-            WriteLine($"[{DataPadrao.Brasilia}] [ERR] [{origem}:{line}] {e.Message}", true);
-            if (e.Data.Count > 0)
-            {
-                StringBuilder sb = new StringBuilder();
-                foreach (DictionaryEntry i in e.Data)
-                {
-                    sb.AppendLine($"{i.Key}: {i.Value}");
-                }
-                WriteLine(sb.ToString(), true);
-            }
-            WriteLine(e);
+            string? s = Logger.LogSync(e, origem, line, file);
+            WriteConsole(e);
         }
-        private static void WriteLine(string msg, bool error = false)
+        private static void WriteLog(string typeLog, string message, string origem = "", int line = 0, string file = "")
         {
+            string? msg = $"[{typeLog}] {message}";
+            msg = Logger.LogSync(msg, origem, line, file);
+            WriteConsole(msg);
+        }
+        private static void WriteConsole(string? msg, bool error = false)
+        {
+            if (string.IsNullOrEmpty(msg))
+                return;
             if (Logger.IsConsoleApplication)
             {
                 if (error)
@@ -141,7 +118,7 @@ namespace Yordi.Tools
             else
                 Debug.WriteLine(msg);
         }
-        private static void WriteLine(Exception? exception)
+        private static void WriteConsole(Exception? exception)
         {
             if (Logger.IsConsoleApplication)
                 while (exception != null)

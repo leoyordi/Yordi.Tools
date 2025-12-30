@@ -50,54 +50,50 @@ namespace Yordi.Tools
 
         public static string? UltimoLog() => FileTools.UltimoLog(_firstPath);
         public static string? LogDiaAnterior() => FileTools.LogDiaAnterior(_firstPath);
-        public static async Task LogAsync(Exception filterContext, [CallerMemberName] string origem = "", [CallerLineNumber] int line = 0,
-            [CallerFilePath] string file = "")
+        public static async Task<string?> LogAsync(Exception filterContext, string origem = "", int line = 0, string file = "")
         {
-            string origem2;
-            if (string.IsNullOrEmpty(file))
-                origem2 = origem;
-            else
-                origem2 = $"{FileTools.NomeArquivoSemExtensao(file)}:{origem}";
-            string builder = MontaMensagemDeErro(filterContext, origem2, line);
-            await GraveAsync(builder);
+            string s = MontaMensagemDeErro(filterContext, origem, line, file);
+            if (await GraveAsync(s))
+                return s;
+            return null;
         }
 
 
-        public static async Task LogAsync(string texto, [CallerMemberName] string origem = "", [CallerLineNumber] int line = 0,
-            [CallerFilePath] string file = "")
+        public static async Task<string?> LogAsync(string texto, string origem = "", int line = 0, string file = "")
         {
-            string origem2;
-            if (string.IsNullOrEmpty(file))
-                origem2 = origem;
-            else
-                origem2 = $"{FileTools.NomeArquivoSemExtensao(file)}:{origem}";
-            string s = $"[{DataPadrao.Brasilia}] [{origem2}:{line}] {texto}{Environment.NewLine}";
-            await GraveAsync(s);
+            string s = MontaLinha(texto, origem, line, file);
+            if (string.IsNullOrEmpty(s))
+                return null;
+            if (await GraveAsync(s))
+                return s;
+            return null;
         }
-        private static async Task GraveAsync(string texto)
+        private static async Task<bool> GraveAsync(string texto)
         {
             try
             {
                 MontaNomeArquivoCompleto();
                 await FileTools.WriteTextAsync(_internalFile, texto);
+                return true;
             }
-            catch { }
+            catch { return false; }
         }
 
 
-        private static string MontaMensagemDeErro(Exception? filterContext, string origem, int line)
+        private static string MontaMensagemDeErro(Exception? filterContext, string origem, int line, string file)
         {
-            StringBuilder builder = new StringBuilder();
-            builder
-                .AppendLine(DataPadrao.Brasilia.ToString())
-                .AppendLine($"Origem: {origem}:{line}");
+            if (filterContext == null)
+                return MontaLinha("Exception is null", origem, line, file);
+
+            string s = MontaLinha(filterContext.Message, origem, line, file);
+            StringBuilder builder = new StringBuilder(s);
             if (filterContext?.Data != null)
             foreach (DictionaryEntry i in filterContext.Data)
-                builder.AppendLine($"{i.Key}: {i.Value}");
+                builder.AppendLine($" -> {i.Key}: {i.Value}");
+            builder.AppendLine(" ===== EXCEPTION ===== ");
             while (filterContext != null)
             {
                 builder
-                    .AppendLine($"Message: {filterContext.Message}")
                     .AppendLine($"Source: {filterContext.Source}")
                     .AppendLine($"Target: {filterContext.TargetSite}")
                     .AppendLine($"Type: {filterContext.GetType().Name}")
@@ -105,35 +101,49 @@ namespace Yordi.Tools
                     ;
                 filterContext = filterContext.InnerException;
                 if (filterContext != null)
-                    builder.AppendLine("INNER EXCEPTION");
+                {
+                    builder.AppendLine("-- INNER EXCEPTION --");
+                    builder .AppendLine($"Message: {filterContext.Message}");
+                }
             }
             return builder.ToString();
         }
-        public static bool LogSync(Exception filterContext, [CallerMemberName] string origem = "", [CallerLineNumber] int line = 0,
-            [CallerFilePath] string file = "")
+        public static string? LogSync(Exception filterContext, string origem = "", int line = 0, string file = "")
         {
-            string origem2;
-            if (string.IsNullOrEmpty(file))
-                origem2 = origem;
-            else
-                origem2 = $"{FileTools.NomeArquivoSemExtensao(file)}:{origem}";
-            string erro = MontaMensagemDeErro(filterContext, origem2, line);
-
-            return GraveSync(erro);
+            string s = MontaMensagemDeErro(filterContext, origem, line, file);
+            if (GraveSync(s))
+                return s;
+            return null;
         }
 
-        public static bool LogSync(string texto, [CallerMemberName] string origem = "", [CallerLineNumber] int line = 0,
-            [CallerFilePath] string file = "")
+        public static string? LogSync(string texto, string origem = "", int line = 0, string file = "")
         {
-            string origem2;
-            if (string.IsNullOrEmpty(file))
-                origem2 = origem;
-            else
-                origem2 = $"{FileTools.NomeArquivoSemExtensao(file)}:{origem}";
-            string s = $"[{DataPadrao.Brasilia}] [{origem2}:{line}] {texto}{Environment.NewLine}";
-            return GraveSync(s);
+            string s = MontaLinha(texto, origem, line, file);
+            if (string.IsNullOrEmpty(s))
+                return null;
+            if (IsConsoleApplication)
+                Console.Write(s);
+            if (GraveSync(s))
+                return s;
+            return null;
         }
+        public static string MontaLinha(string texto, string origem, int line, string file)
+        {
+            StringBuilder builder = new StringBuilder($"[{DataPadrao.Brasilia}] ");
+            if (!string.IsNullOrEmpty(origem) || !string.IsNullOrEmpty(file) || line > 0)
+            {
+                if (!string.IsNullOrEmpty(file))
+                {
+                    var origem2 = $"{FileTools.NomeArquivoSemExtensao(file)}:{origem}";
+                    builder.Append($"[{origem2}:{line}] ");
+                }
+                else
+                    builder.Append($"[{origem}:{line}] ");
+            }
 
+            builder.AppendLine(texto);
+            return builder.ToString();
+        }
         private static bool GraveSync(string texto)
         {
             try
