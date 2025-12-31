@@ -74,29 +74,29 @@ namespace Yordi.Tools
 
     public static class LoggerYordiExtensions
     {
-        public static void LogWarning(this ILogger logger, string message, string origem = "", int line = 0, string file = "")
+        public static void LogWarning(this ILogger logger, string message, string? origem = "", int? line = 0, string? file = "")
         {
             WriteLog("WAR", message, origem, line, file);
         }
-        public static void LogInformation(this ILogger logger, string message, string origem = "", int line = 0, string file = "")
+        public static void LogInformation(this ILogger logger, string message, string? origem = "", int? line = 0, string? file = "")
         {
             WriteLog("INF", message, origem, line, file);
         }
 
-        public static void LogDebug(this ILogger logger, string message, string origem = "", int line = 0, string file = "")
+        public static void LogDebug(this ILogger logger, string message, string? origem = "", int? line = 0, string? file = "")
         {
             WriteLog("DEB", message, origem, line, file);
         }
-        public static void LogError(this ILogger logger, string message, string origem = "", int line = 0, string file = "")
+        public static void LogError(this ILogger logger, string message, string? origem = "", int? line = 0, string? file = "")
         {
             WriteLog("ERR", message, origem, line, file);
         }
-        public static void LogError(this ILogger logger, Exception e, string origem = "", int line = 0, string file = "")
+        public static void LogError(this ILogger logger, Exception e, string? origem = "", int? line = 0, string? file = "")
         {
             string? s = Logger.LogSync(e, origem, line, file);
             WriteConsole(e);
         }
-        private static void WriteLog(string typeLog, string message, string origem = "", int line = 0, string file = "")
+        private static void WriteLog(string typeLog, string message, string? origem = "", int? line = 0, string? file = "")
         {
             string? msg = $"[{typeLog}] {message}";
             msg = Logger.LogSync(msg, origem, line, file);

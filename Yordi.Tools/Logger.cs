@@ -80,7 +80,7 @@ namespace Yordi.Tools
         }
 
 
-        private static string MontaMensagemDeErro(Exception? filterContext, string origem, int line, string file)
+        private static string MontaMensagemDeErro(Exception? filterContext, string? origem, int? line, string? file)
         {
             if (filterContext == null)
                 return MontaLinha("Exception is null", origem, line, file);
@@ -108,7 +108,7 @@ namespace Yordi.Tools
             }
             return builder.ToString();
         }
-        public static string? LogSync(Exception filterContext, string origem = "", int line = 0, string file = "")
+        public static string? LogSync(Exception filterContext, string? origem = "", int? line = 0, string? file = "")
         {
             string s = MontaMensagemDeErro(filterContext, origem, line, file);
             if (GraveSync(s))
@@ -116,7 +116,7 @@ namespace Yordi.Tools
             return null;
         }
 
-        public static string? LogSync(string texto, string origem = "", int line = 0, string file = "")
+        public static string? LogSync(string texto, string? origem = "", int? line = 0, string? file = "")
         {
             string s = MontaLinha(texto, origem, line, file);
             if (string.IsNullOrEmpty(s))
@@ -127,10 +127,10 @@ namespace Yordi.Tools
                 return s;
             return null;
         }
-        public static string MontaLinha(string texto, string origem, int line, string file)
+        public static string MontaLinha(string texto, string? origem, int? line, string? file)
         {
             StringBuilder builder = new StringBuilder($"[{DataPadrao.Brasilia}] ");
-            if (!string.IsNullOrEmpty(origem) || !string.IsNullOrEmpty(file) || line > 0)
+            if (!string.IsNullOrEmpty(origem) || !string.IsNullOrEmpty(file) || line.HasValue)
             {
                 if (!string.IsNullOrEmpty(file))
                 {

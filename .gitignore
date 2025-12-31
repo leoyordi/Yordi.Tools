@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /ReleaseAndNuget.ps1
 /ReleaseAndNuget.ps1
+/Yordi.Tools.ReleaseAndNuget.ps1
