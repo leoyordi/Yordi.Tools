@@ -121,8 +121,6 @@ namespace Yordi.Tools
             string s = MontaLinha(texto, origem, line, file);
             if (string.IsNullOrEmpty(s))
                 return null;
-            if (IsConsoleApplication)
-                Console.Write(s);
             if (GraveSync(s))
                 return s;
             return null;

@@ -761,7 +761,7 @@ foreach (var metodo in metodosAPI)
 
 ## 📝 Changelog
 
-### v1.0.15 (atual)
+### v1.0.16 (atual)
 - **Alteração importante**: Atualização no sistema de logging.
   - As APIs de log em `Yordi.Tools.Logger` agora retornam valores informativos em vez de serem apenas `void`/fire-and-forget:
     - `LogAsync(Exception filterContext, string origem = "", int line = 0, string file = "")` passa a retornar `Task<string?>` (linha do log ou `null` em caso de falha).
@@ -774,6 +774,9 @@ foreach (var metodo in metodosAPI)
 - **Breaking change**: métodos públicos de logging agora retornam `string?` ou `Task<string?>`. Código que usava as APIs de log como `void` deve ser revisto para tratar (ou conscientemente ignorar) os novos retornos.
 
 - Atualização da documentação `README.md` com exemplos e instruções de migração.
+
+### v1.0.15 (preterida)
+- v1.0.15 foi preterida devido a erro de projeto. v.1.0.16 é a versão correta.
 
 ### v1.0.14
 - **Adição**: Interface `IPOCOIndexes` para definição de índices de banco de dados
