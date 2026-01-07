@@ -106,17 +106,19 @@ namespace Yordi.Tools
         {
             if (string.IsNullOrEmpty(msg))
                 return;
+            if (!msg.EndsWith(Environment.NewLine))
+                msg += Environment.NewLine;
             if (Logger.IsConsoleApplication)
             {
                 if (error)
-                    Console.Error.WriteLine(msg);
+                    Console.Error.Write(msg);
                 else
-                    Console.WriteLine(msg);
+                    Console.Write(msg);
             }
             if (error)
-                Debug.Fail(msg + Environment.NewLine);
+                Debug.Fail(msg);
             else
-                Debug.WriteLine(msg);
+                Debug.Write(msg);
         }
         private static void WriteConsole(Exception? exception)
         {

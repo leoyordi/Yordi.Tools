@@ -13,7 +13,7 @@
 	</Description>
 	<PackageTags>Yordi;Tools;Ferramentas</PackageTags>
 	<PackageId>Yordi.Tools</PackageId>
-	<Version>1.0.16</Version>
+	<Version>1.0.17</Version>
 	<Company>Yordi Sistemas Inteligentes</Company>
 	<RepositoryUrl>https://github.com/leoyordi/Yordi.Tools</RepositoryUrl>
 	<PackageReadmeFile>README.md</PackageReadmeFile>

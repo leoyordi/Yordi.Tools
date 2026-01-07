@@ -760,6 +760,8 @@ foreach (var metodo in metodosAPI)
 ---
 
 ## 📝 Changelog
+### v1.0.17
+- Correção de excesso de nova linha ao escrever logs em console e debug output.
 
 ### v1.0.16 (atual)
 - **Alteração importante**: Atualização no sistema de logging.
