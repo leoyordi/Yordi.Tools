@@ -79,6 +79,24 @@ namespace Yordi.Tools
         BLOB
     }
 
+    /// <summary>
+    /// Classificação do tipo de rede/IP
+    /// </summary>
+    public enum TipoRede
+    {
+        /// <summary>Loopback (127.x.x.x)</summary>
+        Loopback,
+        /// <summary>Link-local/APIPA (169.254.x.x)</summary>
+        LinkLocal,
+        /// <summary>Rede privada local (10.x, 172.16-31.x, 192.168.x)</summary>
+        RedeLocal,
+        /// <summary>Conexão VPN</summary>
+        VPN,
+        /// <summary>IP público/externo para acesso web</summary>
+        Web,
+        /// <summary>Não classificado</summary>
+        Desconhecido
+    }
 
     public class EnumDisplay: IDescricao
     {

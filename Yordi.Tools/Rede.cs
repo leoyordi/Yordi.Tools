@@ -153,4 +153,49 @@ namespace Yordi.Tools
         }
 
     }
+
+    /// <summary>
+    /// Informações detalhadas de um endereço IP
+    /// </summary>
+    public class InfoRede
+    {
+        public IPAddress IP { get; set; } = IPAddress.None;
+        public string IPString => IP.ToString();
+        public TipoRede Tipo { get; set; }
+        public string NomeAdaptador { get; set; } = string.Empty;
+        public string DescricaoAdaptador { get; set; } = string.Empty;
+        public IPAddress? MascaraSubRede { get; set; }
+        public IPAddress? Gateway { get; set; }
+        public string? TipoVPN { get; set; }
+        public NetworkInterfaceType TipoInterface { get; set; }
+        public OperationalStatus Status { get; set; }
+
+        public override string ToString()
+        {
+            var tipoDesc = Tipo == TipoRede.VPN && !string.IsNullOrEmpty(TipoVPN)
+                ? $"VPN ({TipoVPN})"
+                : Tipo.ToString();
+            return $"IP {IPString} | {tipoDesc} | {NomeAdaptador}";
+        }
+
+        /// <summary>
+        /// Verifica se dois IPs estão na mesma sub-rede
+        /// </summary>
+        public bool EstaNaMesmaRede(IPAddress outroIP)
+        {
+            if (MascaraSubRede == null || IP.AddressFamily != outroIP.AddressFamily)
+                return false;
+
+            var ipBytes = IP.GetAddressBytes();
+            var outroBytes = outroIP.GetAddressBytes();
+            var mascaraBytes = MascaraSubRede.GetAddressBytes();
+
+            for (int i = 0; i < ipBytes.Length; i++)
+            {
+                if ((ipBytes[i] & mascaraBytes[i]) != (outroBytes[i] & mascaraBytes[i]))
+                    return false;
+            }
+            return true;
+        }
+    }
 }
