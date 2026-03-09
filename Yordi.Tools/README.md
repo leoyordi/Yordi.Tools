@@ -760,10 +760,14 @@ foreach (var metodo in metodosAPI)
 ---
 
 ## 📝 Changelog
+### v1.0.18
+- **Adição**: Propriedade `UsarSQLiteWALMode` na classe `DBConfig` para habilitar o modo WAL no SQLite.
+- **Adição**: Recursos de identificação de IPs privados e públicos, dos adaptadores locais, na classe `Rede`.
+
 ### v1.0.17
 - Correção de excesso de nova linha ao escrever logs em console e debug output.
 
-### v1.0.16 (atual)
+### v1.0.16
 - **Alteração importante**: Atualização no sistema de logging.
   - As APIs de log em `Yordi.Tools.Logger` agora retornam valores informativos em vez de serem apenas `void`/fire-and-forget:
     - `LogAsync(Exception filterContext, string origem = "", int line = 0, string file = "")` passa a retornar `Task<string?>` (linha do log ou `null` em caso de falha).

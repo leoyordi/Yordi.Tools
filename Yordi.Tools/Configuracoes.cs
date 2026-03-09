@@ -31,6 +31,7 @@ namespace Yordi.Tools
         public string? User { get; set; }
         public string? Password { get; set; }
         public string? Adicional { get; set; }
+        public bool? UsarSQLiteWALMode { get; set; }
         public int TryReconnect { get; set; }
         public int SecondsWaitToTry { get; set; }
 
