@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Collections;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Yordi.Tools
 {
@@ -40,9 +37,43 @@ namespace Yordi.Tools
             {
                 message += formatter(state, exception);
             }
+
+            switch(logLevel)
+            {
+                case LogLevel.Trace:
+                    this.LogTrace(message);
+                    break;
+                case LogLevel.Debug:
+                    this.LogDebug(message);
+                    break;
+                case LogLevel.Information:
+                    this.LogInformation(message);
+                    break;
+                case LogLevel.Warning:
+                    this.LogWarning(message);
+                    break;
+                case LogLevel.Error:
+                    if (exception != null)
+                        this.LogError(exception);
+                    else
+                        this.LogError(message);
+                    break;
+                case LogLevel.Critical:
+                    if (exception != null)
+                        this.LogCritical(exception);
+                    else
+                        this.LogCritical(message);
+                    break;
+                case LogLevel.None:
+                    break;
+                default:
+                    this.LogInformation(message);
+                    break;
+            }
+
             string log = $"[{DateTime.Now}] [{logLevel}] {message}";
             WriteLine(log, logLevel >= LogLevel.Error);
-            Logger.LogSync(log);
+            //Logger.LogSync(log);
         }
         private class NoopDisposable : IDisposable
         {
@@ -74,6 +105,20 @@ namespace Yordi.Tools
 
     public static class LoggerYordiExtensions
     {
+        public static void LogCritical(this ILogger logger, string message, string? origem = "", int? line = 0, string? file = "")
+        {
+            WriteLog("CRI", message, origem, line, file);
+        }
+        public static void LogCritical(this ILogger logger, Exception e, string? origem = "", int? line = 0, string? file = "")
+        {
+            string? s = Logger.LogSync(e, origem, line, file);
+            WriteConsole(e);
+        }
+
+        public static void LogTrace(this ILogger logger, string message, string? origem = "", int? line = 0, string? file = "")
+        {
+            WriteLog("TRA", message, origem, line, file);
+        }
         public static void LogWarning(this ILogger logger, string message, string? origem = "", int? line = 0, string? file = "")
         {
             WriteLog("WAR", message, origem, line, file);
