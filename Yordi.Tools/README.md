@@ -19,7 +19,7 @@ Install-Package Yordi.Tools
 
 ## Versão atual
 
-- **v1.0.18.3**
+- **v1.0.18.4**
 
 ## Projetos da solução
 
@@ -59,6 +59,7 @@ Criptografia simétrica com métodos de encriptação/desencriptação.
 - `LoggerYordi` implementa `Microsoft.Extensions.Logging.ILogger`
 - `Logger` oferece API direta de gravação em arquivo
 - desde a linha **1.0.16**, métodos de log retornam `string?`/`Task<string?>` para permitir tratamento de falha
+- desde a linha **1.0.18.4**, as mensagens também são publicadas no console/debug para visibilidade imediata, além do arquivo.
 
 ### EventBaseClass
 Classe base para publicação de eventos de mensagem, erro, exceção, quantidade de registros e progresso.
@@ -128,8 +129,9 @@ public class Produto : Basico, IPOCOIndexes
 
 ## Changelog
 
-### v1.0.18.3 (atual)
+### v1.0.18.4 (atual)
 - Ajustes incrementais e estabilização da linha 1.0.18.
+- As mensagens de log também são publicadas no console/debug para visibilidade imediata, além do arquivo.
 
 ### v1.0.18
 - Adição: `UsarSQLiteWALMode` em `DBConfig`.

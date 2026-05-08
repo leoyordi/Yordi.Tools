@@ -89,6 +89,9 @@ namespace Yordi.Tools
             else
                 Console.Error.WriteLine(msg);
 #endif
+            // Escreve na janela de saída do depurador do Visual Studio quando habilitado
+            if (Debugger.IsAttached)
+                Debug.WriteLine(msg);
         }
     }
     public class LoggerProvider : ILoggerProvider
@@ -160,10 +163,14 @@ namespace Yordi.Tools
                 else
                     Console.Write(msg);
             }
-            if (error)
-                Debug.Fail(msg);
-            else
-                Debug.Write(msg);
+
+            if (Debugger.IsAttached)
+            {
+                if (error)
+                    Debug.Fail(msg);
+                else
+                    Debug.Write(msg);
+            }
         }
         private static void WriteConsole(Exception? exception)
         {
@@ -171,6 +178,8 @@ namespace Yordi.Tools
                 while (exception != null)
                 {
                     Console.Error.WriteLine(exception);
+                    if (Debugger.IsAttached)
+                        Debug.WriteLine(exception);
                     exception = exception.InnerException;
                 }
         }
