@@ -97,16 +97,68 @@ namespace Yordi.Tools
                     .AppendLine($"Source: {filterContext.Source}")
                     .AppendLine($"Target: {filterContext.TargetSite}")
                     .AppendLine($"Type: {filterContext.GetType().Name}")
-                    .AppendLine($"Stack: {filterContext.StackTrace}")
-                    ;
+                    .AppendLine($"Stack:")
+                    .AppendLine(SimplificaStackTrace(filterContext.StackTrace));
                 filterContext = filterContext.InnerException;
                 if (filterContext != null)
                 {
                     builder.AppendLine("-- INNER EXCEPTION --");
-                    builder .AppendLine($"Message: {filterContext.Message}");
+                    builder.AppendLine($"Message: {filterContext.Message}");
                 }
             }
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// Reduz cada linha do stack trace ao formato resumido:
+        /// <c>   at NomeClasse.Metodo() in Arquivo.cs:line N</c>
+        /// </summary>
+        internal static string SimplificaStackTrace(string? stackTrace)
+        {
+            if (string.IsNullOrEmpty(stackTrace))
+                return string.Empty;
+
+            var sb = new StringBuilder();
+            foreach (var linha in stackTrace.Split('\n'))
+            {
+                var l = linha.TrimEnd('\r');
+
+                // Localiza o trecho " in <caminho>:line N"
+                int inIdx = l.IndexOf(" in ", StringComparison.Ordinal);
+                if (inIdx >= 0)
+                {
+                    // Parte antes do " in ": "   at Namespace.Classe.Metodo()"
+                    string chamada = l[..inIdx].Trim();
+
+                    // Extrai só o nome do método sem namespace completo
+                    // "at Namespace.A.B.Metodo(args)" -> "Classe.Metodo(args)"
+                    if (chamada.StartsWith("at ", StringComparison.Ordinal))
+                    {
+                        string semAt = chamada[3..]; // remove "at "
+                        // Mantém apenas os dois últimos segmentos (Classe.Metodo)
+                        var partes = semAt.Split('.');
+                        chamada = partes.Length >= 2
+                            ? $"at {partes[^2]}.{partes[^1]}"
+                            : $"at {semAt}";
+                    }
+
+                    // Parte após " in ": "<caminho>:line N"
+                    string local = l[(inIdx + 4)..].Trim();
+
+                    // Extrai só o nome do arquivo
+                    int barraIdx = Math.Max(local.LastIndexOf('\\'), local.LastIndexOf('/'));
+                    if (barraIdx >= 0)
+                        local = local[(barraIdx + 1)..];
+
+                    sb.AppendLine($"   {chamada} in {local}");
+                }
+                else if (!string.IsNullOrWhiteSpace(l))
+                {
+                    // Linhas sem caminho (ex.: chamadas internas do runtime)
+                    sb.AppendLine($"   {l.Trim()}");
+                }
+            }
+            return sb.ToString();
         }
         public static string? LogSync(Exception filterContext, string? origem = "", int? line = 0, string? file = "")
         {
@@ -127,16 +179,19 @@ namespace Yordi.Tools
         }
         public static string MontaLinha(string texto, string? origem, int? line, string? file)
         {
-            StringBuilder builder = new StringBuilder($"[{DataPadrao.Brasilia}] ");
-            if (!string.IsNullOrEmpty(origem) || !string.IsNullOrEmpty(file) || line.HasValue)
+            StringBuilder builder = new StringBuilder($"[{DateTime.Now:dd/MM/yyyy HH:mm:ss.fff}] ");
+            bool temOrigem = !string.IsNullOrEmpty(origem);
+            bool temArquivo = !string.IsNullOrEmpty(file);
+            bool temLinha   = line.HasValue && line.Value > 0;
+            if (temOrigem || temArquivo || temLinha)
             {
-                if (!string.IsNullOrEmpty(file))
+                if (temArquivo)
                 {
                     var origem2 = $"{FileTools.NomeArquivoSemExtensao(file)}:{origem}";
-                    builder.Append($"[{origem2}:{line}] ");
+                    builder.Append(temLinha ? $"[{origem2}:{line}] " : $"[{origem2}] ");
                 }
                 else
-                    builder.Append($"[{origem}:{line}] ");
+                    builder.Append(temLinha ? $"[{origem}:{line}] " : $"[{origem}] ");
             }
 
             builder.AppendLine(texto);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Yordi.Tools
 {
@@ -13,7 +14,18 @@ namespace Yordi.Tools
             _log ??= new LoggerYordi(path);
             return _log;
         }
-        private LoggerYordi(string path = "")
+
+        /// <summary>
+        /// Retorna um logger singleton tipado para <typeparamref name="T"/>,
+        /// equivalente ao <see cref="ILogger{T}"/> do .NET.
+        /// <code>
+        /// var log = LoggerYordi.Instance&lt;MinhaClasse&gt;();
+        /// log.Write(LogLevel.Information, "Olá!");
+        /// // saída: [MinhaClasse.MeuMetodo:42] [INF] Olá!
+        /// </code>
+        /// </summary>
+        public static LoggerYordi<T> Instance<T>() => LoggerYordi<T>.LoggerInstance();
+        protected LoggerYordi(string path = "")
         {
             if (!string.IsNullOrEmpty(path) && !string.Equals(path, Logger.Path))
                 Logger.Path = path;
@@ -28,6 +40,21 @@ namespace Yordi.Tools
             return logLevel > LogLevel.Debug;
         }
 
+        /// <summary>
+        /// Registra uma mensagem capturando automaticamente o método, linha e arquivo do chamador.
+        /// Prefira este método ao <see cref="ILogger.Log{TState}"/> para ter a origem preenchida.
+        /// </summary>
+        public void Write(LogLevel logLevel, string message, Exception? exception = null,
+            [CallerMemberName] string origem = "",
+            [CallerLineNumber] int line = 0,
+            [CallerFilePath] string file = "")
+        {
+            if (!IsEnabled(logLevel))
+                return;
+
+            WriteCore(logLevel, message, exception, origem, line, file);
+        }
+
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
             if (!IsEnabled(logLevel))
@@ -38,42 +65,53 @@ namespace Yordi.Tools
                 message += formatter(state, exception);
             }
 
-            switch(logLevel)
+            // Origem capturada via StackFrame: sobe 1 frame além do Log<TState>
+            var frame = new StackFrame(1, needFileInfo: true);
+            string origem = frame.GetMethod()?.Name ?? "";
+            int line      = frame.GetFileLineNumber();
+            string file   = frame.GetFileName() ?? "";
+
+            WriteCore(logLevel, message, exception, origem, line, file);
+        }
+
+        private void WriteCore(LogLevel logLevel, string message, Exception? exception,
+            string origem, int line, string file)
+        {
+            switch (logLevel)
             {
                 case LogLevel.Trace:
-                    this.LogTrace(message);
+                    this.LogTrace(message, origem, line, file);
                     break;
                 case LogLevel.Debug:
-                    this.LogDebug(message);
+                    this.LogDebug(message, origem, line, file);
                     break;
                 case LogLevel.Information:
-                    this.LogInformation(message);
+                    this.LogInformation(message, origem, line, file);
                     break;
                 case LogLevel.Warning:
-                    this.LogWarning(message);
+                    this.LogWarning(message, origem, line, file);
                     break;
                 case LogLevel.Error:
                     if (exception != null)
-                        this.LogError(exception);
+                        this.LogError(exception, origem, line, file);
                     else
-                        this.LogError(message);
+                        this.LogError(message, origem, line, file);
                     break;
                 case LogLevel.Critical:
                     if (exception != null)
-                        this.LogCritical(exception);
+                        this.LogCritical(exception, origem, line, file);
                     else
-                        this.LogCritical(message);
+                        this.LogCritical(message, origem, line, file);
                     break;
                 case LogLevel.None:
                     break;
                 default:
-                    this.LogInformation(message);
+                    this.LogInformation(message, origem, line, file);
                     break;
             }
 
-            string log = $"[{DateTime.Now}] [{logLevel}] {message}";
+            string log = $"[{DateTime.Now:dd/MM/yyyy HH:mm:ss.fff}] [{logLevel}] {message}";
             WriteLine(log, logLevel >= LogLevel.Error);
-            //Logger.LogSync(log);
         }
         private class NoopDisposable : IDisposable
         {
@@ -94,6 +132,43 @@ namespace Yordi.Tools
                 Debug.WriteLine(msg);
         }
     }
+
+    /// <summary>
+    /// Logger genérico tipado equivalente ao <see cref="ILogger{T}"/> do .NET.
+    /// O nome da categoria (<typeparamref name="T"/>) é automaticamente prefixado em cada mensagem.
+    /// </summary>
+    public sealed class LoggerYordi<T> : LoggerYordi, ILogger<T>
+    {
+        private static readonly string _categoria = typeof(T).Name;
+
+#pragma warning disable CS8618
+        private static LoggerYordi<T> _instance;
+#pragma warning restore CS8618
+
+        private LoggerYordi() { }
+
+        /// <summary>
+        /// Retorna a instância singleton tipada para <typeparamref name="T"/>.
+        /// </summary>
+        public new static LoggerYordi<T> LoggerInstance(string path = "")
+        {
+            _instance ??= new LoggerYordi<T>();
+            return _instance;
+        }
+
+        /// <summary>
+        /// Registra uma mensagem prefixando o nome de <typeparamref name="T"/> na origem.
+        /// </summary>
+        public new void Write(LogLevel logLevel, string message, Exception? exception = null,
+            [CallerMemberName] string origem = "",
+            [CallerLineNumber] int line = 0,
+            [CallerFilePath] string file = "")
+        {
+            // Prefixa a categoria para identificar claramente a classe dona do log
+            base.Write(logLevel, message, exception, $"{_categoria}.{origem}", line, file);
+        }
+    }
+
     public class LoggerProvider : ILoggerProvider
     {
         public ILogger CreateLogger(string path)
@@ -174,14 +249,28 @@ namespace Yordi.Tools
         }
         private static void WriteConsole(Exception? exception)
         {
-            if (Logger.IsConsoleApplication)
-                while (exception != null)
+            while (exception != null)
+            {
+                string header  = $"{exception.GetType().Name}: {exception.Message}";
+                string stack   = Logger.SimplificaStackTrace(exception.StackTrace);
+                string saida   = $"{header}{Environment.NewLine}{stack}";
+
+                if (Logger.IsConsoleApplication)
                 {
-                    Console.Error.WriteLine(exception);
-                    if (Debugger.IsAttached)
-                        Debug.WriteLine(exception);
-                    exception = exception.InnerException;
+                    Console.Error.WriteLine(saida);
+                    //Console.Error.WriteLine(exception);
                 }
+
+                if (Debugger.IsAttached)
+                {
+                    Debug.WriteLine(saida);
+                    //Debug.WriteLine(exception);
+                }
+
+                exception = exception.InnerException;
+                if (exception != null)
+                    Debug.WriteLine("-- INNER EXCEPTION --");
+            }
         }
     }
 }

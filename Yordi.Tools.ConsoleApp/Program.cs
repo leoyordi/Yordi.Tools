@@ -4,16 +4,22 @@
     {
         public static void Main(string[] args)
         {
-            var user = new
-            {
-                Username = "Yordi",
-                Password = "123456"
-            };
-            var cripto = new Cripto("PalavraChave");
-            string s1 = cripto.Encrypt("23456");
-            string s2 = cripto.Encrypt(user.Password);
-            Console.WriteLine(s1);
-            Console.WriteLine(s2);
+            // ── Teste 1: LoggerYordi (não tipado) ──────────────────────────────────
+            // Execute com F5 e verifique a janela Saída > Depurar no Visual Studio.
+            var teste = new TesteLogger();
+            teste.ExecutarAsync(totalSegundos: 5).GetAwaiter().GetResult();
+
+            Console.WriteLine();
+            Console.WriteLine("──────────────────────────────────────────────────");
+            Console.WriteLine();
+
+            // ── Teste 2: LoggerYordi<T> (ILogger<T>) ──────────────────────────────
+            // Verifica se a categoria do tipo aparece corretamente na origem de cada mensagem.
+            var testeT = new TesteLoggerT();
+            testeT.ExecutarAsync(totalSegundos: 5).GetAwaiter().GetResult();
+
+            Console.WriteLine();
+            Console.WriteLine("Pressione qualquer tecla para sair...");
             Console.ReadKey();
         }
         public class User
