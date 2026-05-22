@@ -151,6 +151,11 @@ namespace Yordi.Tools
             var underlyingType = Nullable.GetUnderlyingType(type);
             var r = underlyingType ?? type;
 
+            // Adicionar junto dos outros mapeamentos de tipo:
+            if (type == typeof(TimeOnly) || type == typeof(TimeOnly?))
+                return Tipo.HORA;
+            if (type == typeof(DateOnly) || type == typeof(DateOnly?))
+                return Tipo.DATA; 
             if (r.IsEnum)
                 return Tipo.ENUM;
             else

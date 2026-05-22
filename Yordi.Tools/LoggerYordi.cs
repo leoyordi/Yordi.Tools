@@ -127,9 +127,8 @@ namespace Yordi.Tools
             else
                 Console.Error.WriteLine(msg);
 #endif
-            // Escreve na janela de saída do depurador do Visual Studio quando habilitado
-            if (Debugger.IsAttached)
-                Debug.WriteLine(msg);
+            
+            Trace.WriteLine(msg);
         }
     }
 
@@ -239,21 +238,18 @@ namespace Yordi.Tools
                     Console.Write(msg);
             }
 
-            if (Debugger.IsAttached)
-            {
-                if (error)
-                    Debug.Fail(msg);
-                else
-                    Debug.Write(msg);
-            }
+            if (error)
+                Trace.Fail(msg);
+            else
+                Trace.Write(msg);
         }
         private static void WriteConsole(Exception? exception)
         {
             while (exception != null)
             {
-                string header  = $"{exception.GetType().Name}: {exception.Message}";
-                string stack   = Logger.SimplificaStackTrace(exception.StackTrace);
-                string saida   = $"{header}{Environment.NewLine}{stack}";
+                string header = $"{exception.GetType().Name}: {exception.Message}";
+                string stack = Logger.SimplificaStackTrace(exception.StackTrace);
+                string saida = $"{header}{Environment.NewLine}{stack}";
 
                 if (Logger.IsConsoleApplication)
                 {
@@ -261,15 +257,12 @@ namespace Yordi.Tools
                     //Console.Error.WriteLine(exception);
                 }
 
-                if (Debugger.IsAttached)
-                {
-                    Debug.WriteLine(saida);
-                    //Debug.WriteLine(exception);
-                }
+                Trace.WriteLine(saida);
+                //Trace.WriteLine(exception);
 
                 exception = exception.InnerException;
                 if (exception != null)
-                    Debug.WriteLine("-- INNER EXCEPTION --");
+                    Trace.WriteLine("-- INNER EXCEPTION --");
             }
         }
     }
