@@ -1,11 +1,12 @@
-﻿namespace Yordi.Tools.ConsoleApp
+﻿using Yordi.Tools.ConsoleApp;
+
+namespace Yordi.Tools.ConsoleApp
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            // ── Teste 1: LoggerYordi (não tipado) ──────────────────────────────────
-            // Execute com F5 e verifique a janela Saída > Depurar no Visual Studio.
+            // ── Teste 1: LoggerYordi (não tipado) ─────────────────────────────────
             var teste = new TesteLogger();
             teste.ExecutarAsync(totalSegundos: 5).GetAwaiter().GetResult();
 
@@ -13,8 +14,16 @@
             Console.WriteLine("──────────────────────────────────────────────────");
             Console.WriteLine();
 
-            // ── Teste 2: LoggerYordi<T> (ILogger<T>) ──────────────────────────────
-            // Verifica se a categoria do tipo aparece corretamente na origem de cada mensagem.
+            // ── Teste 2: Concorrência — múltiplas threads escrevendo ao mesmo tempo ─
+            // Verifica se o Channel serializa corretamente sem misturar entradas.
+            teste.ExecutarConcurrenteAsync(totalThreads: 8, mensagensPorThread: 10)
+                 .GetAwaiter().GetResult();
+
+            Console.WriteLine();
+            Console.WriteLine("──────────────────────────────────────────────────");
+            Console.WriteLine();
+
+            // ── Teste 3: LoggerYordi<T> (ILogger<T>) ──────────────────────────────
             var testeT = new TesteLoggerT();
             testeT.ExecutarAsync(totalSegundos: 5).GetAwaiter().GetResult();
 
@@ -22,10 +31,11 @@
             Console.WriteLine("Pressione qualquer tecla para sair...");
             Console.ReadKey();
         }
+
         public class User
         {
-            public string Username { get; set; }
-            public string Password { get; set; }
+            public string? Username { get; set; }
+            public string? Password { get; set; }
         }
     }
 }

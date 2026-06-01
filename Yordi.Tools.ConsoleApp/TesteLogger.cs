@@ -22,10 +22,8 @@ namespace Yordi.Tools.ConsoleApp
         /// Executa o teste completo: dispara uma mensagem por nível de log a cada segundo
         /// durante <paramref name="totalSegundos"/> segundos e ao final lança uma exceção de teste.
         /// </summary>
-        /// <param name="totalSegundos">Duração total do teste em segundos (padrão: 5).</param>
         public async Task ExecutarAsync(int totalSegundos = 5)
         {
-
             Message("=== Início do teste de LoggerYordi ===");
             Message($"Depurador anexado: {Debugger.IsAttached}");
             Message(string.Empty);
@@ -43,10 +41,8 @@ namespace Yordi.Tools.ConsoleApp
                 var (nivel, texto) = niveis[(i - 1) % niveis.Length];
                 string msg = $"[Tick {i:D2}/{totalSegundos:D2}] {texto}";
 
-                // Usa Write() para capturar a origem (método/linha/arquivo) automaticamente
                 _logger.Write(nivel, msg);
 
-                // Também exercita os helpers herdados de EventBaseClass
                 if (nivel == LogLevel.Error)
                     Error($"(via EventBaseClass) {msg}");
                 else
@@ -55,11 +51,59 @@ namespace Yordi.Tools.ConsoleApp
                 await Task.Delay(TimeSpan.FromSeconds(1));
             }
 
-            // Teste com exceção real
             TestarExcecao();
 
             Console.WriteLine();
             Console.WriteLine("=== Fim do teste de LoggerYordi ===");
+        }
+
+        /// <summary>
+        /// Executa o teste de concorrência: várias threads escrevem simultaneamente no log
+        /// para verificar se as entradas não se misturam.
+        /// </summary>
+        /// <param name="totalThreads">Quantidade de threads simultâneas (padrão: 8).</param>
+        /// <param name="mensagensPorThread">Mensagens que cada thread enviará (padrão: 10).</param>
+        public async Task ExecutarConcurrenteAsync(int totalThreads = 8, int mensagensPorThread = 10)
+        {
+            Console.WriteLine();
+            Console.WriteLine($"=== Teste de Concorrência: {totalThreads} threads × {mensagensPorThread} msgs ===");
+            Message($"[CONCORRÊNCIA] Iniciando {totalThreads} threads simultâneas...");
+
+            var niveis = new[] { LogLevel.Information, LogLevel.Warning, LogLevel.Error, LogLevel.Critical };
+            var sw = Stopwatch.StartNew();
+
+            // Cria todas as tasks de uma vez — sem await entre elas para forçar concorrência real
+            var tasks = Enumerable.Range(1, totalThreads).Select(threadId => Task.Run(async () =>
+            {
+                for (int i = 1; i <= mensagensPorThread; i++)
+                {
+                    var nivel = niveis[(threadId + i) % niveis.Length];
+                    string msg = $"[Thread {threadId:D2} | Msg {i:D2}/{mensagensPorThread:D2}] " +
+                                 $"nível={nivel} tick={sw.ElapsedMilliseconds}ms";
+
+                    // Exercita os dois caminhos de escrita em paralelo
+                    _logger.Write(nivel, msg);
+
+                    if (nivel >= LogLevel.Error)
+                        Error($"(EventBaseClass) {msg}");
+                    else
+                        Message($"(EventBaseClass) {msg}");
+
+                    // Pequeno delay aleatório para embaralhar a ordem de chegada
+                    await Task.Delay(Random.Shared.Next(10, 80));
+                }
+            })).ToArray();
+
+            await Task.WhenAll(tasks);
+
+            sw.Stop();
+            Message($"[CONCORRÊNCIA] Concluído em {sw.ElapsedMilliseconds}ms. " +
+                    $"Total esperado: {totalThreads * mensagensPorThread} entradas.");
+            Console.WriteLine("=== Fim do teste de Concorrência ===");
+            Console.WriteLine();
+
+            // Aguarda o canal esvaziar antes de continuar (consumidor é async)
+            await Task.Delay(300);
         }
 
         /// <summary>
@@ -73,18 +117,16 @@ namespace Yordi.Tools.ConsoleApp
             }
             catch (Exception ex)
             {
-                // Caminho via ILogger (Log<TState>) — origem capturada via StackFrame
                 _logger.Log(LogLevel.Error, new EventId(99, "TesteExcecao"), ex.Message,
                     ex,
                     (s, e) => $"{s} | Exception: {e?.Message}");
 
-                // Caminho via Write() — origem capturada via CallerMemberName
                 _logger.Write(LogLevel.Critical, ex.Message, ex);
 
-                // Caminho via EventBaseClass
                 Error(ex);
             }
         }
+
         private static void DefineLocalLogger()
         {
             FileTools.CriaDiretorio(diretorio);
@@ -92,6 +134,5 @@ namespace Yordi.Tools.ConsoleApp
             FileTools.CriaDiretorio(Logger.Path);
             Logger.File = "YordiTools.log";
         }
-
     }
 }

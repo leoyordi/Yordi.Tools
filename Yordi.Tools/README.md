@@ -19,7 +19,7 @@ Install-Package Yordi.Tools
 
 ## Versão atual
 
-- **v1.0.21**
+- **v1.0.22**
 
 ## Projetos da solução
 
@@ -205,7 +205,11 @@ public class Produto : Basico, IPOCOIndexes
 
 ## Changelog
 
-### v1.0.21 (atual)
+### v1.0.22 (atual)
+- **Logger — serialização thread-safe via `Channel<T>`**: corrigido bug de mistura de entradas no arquivo de log quando múltiplas threads escreviam simultaneamente. Toda escrita (tanto `GraveSync` quanto `GraveAsync`) passa agora por um `Channel<string>` com consumidor único em background, eliminando interleaving de linhas sem bloquear as threads chamadoras.
+- **`MontaNomeArquivoCompleto` thread-safe**: acesso ao nome do arquivo de log protegido por `lock` via método `ObterNomeArquivoCompleto()`, evitando condição de corrida na resolução do caminho entre threads concorrentes.
+
+### v1.0.21
 - **Logger — saída via `Trace`**: substituído `Debug.Write`/`Debug.WriteLine`/`Debug.Fail` por `Trace.*` e removida a guarda `if (Debugger.IsAttached)`. As mensagens agora são emitidas em builds Debug **e** Release, sem serem suprimidas pelo compilador ao publicar o pacote NuGet. Projetos consumidores devem registrar um `TraceListener` (ex.: `DefaultTraceListener`) para visualizar as mensagens.
 
 ### v1.0.20
