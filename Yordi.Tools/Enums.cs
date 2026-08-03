@@ -22,6 +22,8 @@ namespace Yordi.Tools
         string? Origem { get; set; }
         string? UsuarioAlteracao { get; set; }
         string? UsuarioInclusao { get; set; }
+        TipoAutor? TipoAutorInclusao { get; set; }
+        TipoAutor? TipoAutorAlteracao { get; set; }
     }
     public interface IDisplayValueMember
     {
@@ -77,6 +79,16 @@ namespace Yordi.Tools
         GUID,
         ENUM,
         BLOB
+    }
+
+    /// <summary>
+    /// Tipo da identidade gravada em colunas de autoria.
+    /// </summary>
+    public enum TipoAutor
+    {
+        Local = 1,
+        NuvemPessoa = 2,
+        Aplicacao = 3
     }
 
     /// <summary>

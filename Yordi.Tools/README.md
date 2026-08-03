@@ -19,7 +19,7 @@ Install-Package Yordi.Tools
 
 ## Versão atual
 
-- **v1.0.22**
+- **v1.0.23**
 
 ## Projetos da solução
 
@@ -205,7 +205,13 @@ public class Produto : Basico, IPOCOIndexes
 
 ## Changelog
 
-### v1.0.22 (atual)
+### v1.0.23 (atual)
+- **`ControleAlteracao` com escopo por cadeia de chamada (`AsyncLocal`)**: adicionada a API `Escopo(...)` para isolar autoria por requisição/fluxo assíncrono, evitando contaminação entre chamadas concorrentes.
+- **Compatibilidade preservada**: getters e setters de `ControleAlteracao` continuam públicos e com fallback global fora de escopo.
+- **Tipagem de autor em `CommonColumns`**: adicionadas colunas anuláveis `TipoAutorInclusao` e `TipoAutorAlteracao`.
+- **Novo enum `TipoAutor`**: classificação do autor em `Local`, `NuvemPessoa` e `Aplicacao`.
+
+### v1.0.22
 - **Logger — serialização thread-safe via `Channel<T>`**: corrigido bug de mistura de entradas no arquivo de log quando múltiplas threads escreviam simultaneamente. Toda escrita (tanto `GraveSync` quanto `GraveAsync`) passa agora por um `Channel<string>` com consumidor único em background, eliminando interleaving de linhas sem bloquear as threads chamadoras.
 - **`MontaNomeArquivoCompleto` thread-safe**: acesso ao nome do arquivo de log protegido por `lock` via método `ObterNomeArquivoCompleto()`, evitando condição de corrida na resolução do caminho entre threads concorrentes.
 

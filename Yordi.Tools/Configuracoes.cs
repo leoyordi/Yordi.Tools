@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Yordi.Tools
 {
@@ -114,8 +115,70 @@ namespace Yordi.Tools
 
     public static class ControleAlteracao
     {
-        public static int UsuarioID { get; set; }
-        public static string? Usuario { get; set; }
-        public static string? Origem { get; set; }
+        private sealed class Contexto
+        {
+            public int UsuarioID;
+            public string? Usuario;
+            public string? Origem;
+            public TipoAutor? TipoAutor;
+        }
+
+        private static readonly AsyncLocal<Contexto?> _escopo = new();
+
+        private static int _idGlobal;
+        private static string? _usuarioGlobal;
+        private static string? _origemGlobal;
+        private static TipoAutor? _tipoAutorGlobal;
+
+        public static int UsuarioID
+        {
+            get => _escopo.Value?.UsuarioID ?? _idGlobal;
+            set => _idGlobal = value;
+        }
+
+        public static string? Usuario
+        {
+            get => _escopo.Value?.Usuario ?? _usuarioGlobal;
+            set => _usuarioGlobal = value;
+        }
+
+        public static string? Origem
+        {
+            get => _escopo.Value?.Origem ?? _origemGlobal;
+            set => _origemGlobal = value;
+        }
+
+        public static TipoAutor? TipoAutor
+        {
+            get => _escopo.Value?.TipoAutor ?? _tipoAutorGlobal;
+            set => _tipoAutorGlobal = value;
+        }
+
+        /// <summary>
+        /// Define o autor desta cadeia de chamada.
+        /// Aninhável: o Dispose restaura o escopo anterior.
+        /// Fora de escopo, as propriedades continuam devolvendo os valores globais.
+        /// </summary>
+        public static IDisposable Escopo(int usuarioID, string? usuario, string? origem = null, TipoAutor? tipoAutor = null)
+            => new Vigencia(new Contexto { UsuarioID = usuarioID, Usuario = usuario, Origem = origem, TipoAutor = tipoAutor });
+
+        private sealed class Vigencia : IDisposable
+        {
+            private readonly Contexto? _anterior;
+            private bool _encerrado;
+
+            public Vigencia(Contexto atual)
+            {
+                _anterior = _escopo.Value;
+                _escopo.Value = atual;
+            }
+
+            public void Dispose()
+            {
+                if (_encerrado) return;
+                _encerrado = true;
+                _escopo.Value = _anterior;
+            }
+        }
     }
 }

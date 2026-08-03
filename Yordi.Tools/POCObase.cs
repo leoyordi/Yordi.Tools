@@ -24,6 +24,11 @@ namespace Yordi.Tools
         public virtual string? UsuarioAlteracao { get; set; }
         public virtual string? Origem { get; set; }
 
+        [OnlyInsert]
+        public virtual TipoAutor? TipoAutorInclusao { get; set; }
+        [OnlyUpdate]
+        public virtual TipoAutor? TipoAutorAlteracao { get; set; }
+
     }
 
 
